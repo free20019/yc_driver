@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>终端管理</title>
+	<link rel="stylesheet" href="../../resources/style/reset.css">
+	<link rel="stylesheet" href="../../resources/style/iconfont.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.css">
+	<link rel="stylesheet" href="../../resources/style/main.css">
+	<style></style>
+</head>
+<body>
+<div class="container-fluid">
+	<div class="form-inline">
+		<div class="form-group" style="padding-top: 4px; padding-bottom: 4px; margin-left: 20px;">
+			<label for="zd-query">终端编号</label>
+			<select class="form-control select2" id="zd-query" style="width: 160px;">
+			</select>
+		</div>
+		<div class="form-group" style="padding-top: 4px; padding-bottom: 4px; margin-left: 20px;">
+			<label for="zd-status">是否安装</label>
+			<select class="form-control" id="zd-status" style="width: 160px;">
+				<option value="">全部</option>
+				<option value="1">已安装</option>
+				<option value="0">未安装</option>
+			</select>
+		</div>
+		<button class="btn btn-primary btn-sm" onclick="findzd();">查询</button>
+		<button class="btn btn-primary btn-sm" id="zdAdd" data-toggle="modal">添加</button>
+		<button class="btn btn-primary btn-sm" id="zdUpd" data-toggle="modal">修改</button>
+		<button class="btn btn-danger btn-sm" id="zdDel">删除</button>
+<!-- 		<button class="btn btn-danger btn-sm" id="addAll">一键添加</button> -->
+<!-- 		<button class="btn btn-primary btn-sm" id="clDc">导出</button> -->
+	</div>
+</div>
+<div class="container-fluid tableDiv" style="overflow-x: auto;">
+	<table class="table table-striped table-hover table-condensed" id="zd-tabel">
+		<thead>
+		<tr>
+			<th width="40"><input type="checkbox" class="checkboxAll"></th>
+			<th width="90">序号</th>
+			<th width="130">型号</th>
+			<th width="130">类型</th>
+			<th width="130">终端编号</th>
+			<th width="130">录入时间</th>
+			<th width="130">绑定车牌</th>
+		</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+<div style="text-align: center">
+	<ul id="pageLimit"></ul> 
+</div>
+<!-- Modal -->
+<div class="modal fade container-fluid" id="zd-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+					aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">终端信息</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal">			
+					<div class="form-group">
+						<label for="zd_model" class="col-sm-2 control-label">终端型号</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="zd_model" placeholder="终端型号" onchange="findtype();">
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="zd_type" class="col-sm-2 control-label">终端类型</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="zd_type" placeholder="终端类型" disabled="disabled">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="zd_number" class="col-sm-2 control-label">终端编号</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="zd_number" placeholder="终端编号">
+						</div>
+					</div>
+<!-- 					<div class="form-group"> -->
+<!-- 						<label for="zd_seat" class="col-sm-2 control-label">座位数</label> -->
+<!-- 						<div class="col-sm-10"> -->
+<!-- 							<select class="form-control" id="zd_seat" placeholder="座位数"> -->
+<!-- 									<option value="1">1</option> -->
+<!-- 									<option value="2">2</option> -->
+<!-- 									<option value="3">3</option> -->
+<!-- 									<option value="4">4</option> -->
+<!-- 							</select> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="zd-save">提交</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="../../resources/script/jquery-1.12.1.min.js"></script>
+<script src="../../resources/script/bootstrap/js/bootstrap.js"></script>
+<script src="../../resources/script/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="../../resources/script/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script src="../../resources/script/layer/layer.js"></script>
+<script src="../../resources/script/util.js"></script>
+<script src="../../resources/checkbox.js"></script>
+<script src="../../resources/bootstrap-paginator.js"></script>
+<script src="../../resources/script/My97DatePicker/WdatePicker.js"></script>
+<script src="../../resources/script/select2/dist/js/i18n/zh-CN.js"></script>
+<script src="../../resources/script/select2/dist/js/select2.min.js"></script>
+<script src="common.js"></script>
+<script>
+findzdbh();
+$.fn.modal.Constructor.prototype.enforceFocus = function () {}
+$(document).ready(function() {
+	  $(".select2").select2({  
+			language: "zh-CN",  //设置 提示语言
+	        tags:true,  
+	        createTag:function (decorated, params) {  
+	            return null;  
+	        },  
+	    });
+	});
+findzd();
+function findtype(){
+	var cpmhs=$("#zd_model").val();
+	$.ajax({
+		type: "POST",
+		url: basePath + "common/findtype",
+		data:{"id":cpmhs},
+		timeout : 180000,
+		dataType: 'json',
+		success:function(data){
+			if(data.length>0){
+			$("#zd_type").val(data[0].MDT_TYPE);				
+			}
+		},
+		error: function(){
+		}         
+	});
+}
+
+function findzd(){
+	$.ajax({
+		 type: "POST",
+		url: basePath + "terminal/findzd",
+		data:'postData={"page":"'+1+
+		'","info":"'+$('#zd-query').val()+
+		'","status":"'+$('#zd-status').val()+
+		'"}',
+		timeout : 180000,
+		dataType: 'json',
+		success:function(data){
+			$('#zd-tabel tbody').html("");
+			for (var i = 0; i < data.list.length; i++) {
+				var item = data.list[i];
+				$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+						'<td>' + item.TERMINAL_MODEL + '</td>' +
+						'<td>' + item.TERMINAL_TYPE + '</td>' +
+						'<td>' + item.TERMINAL_NUM + '</td>' +
+						'<td>' + (item.CREATE_TIME==""?"":setformat1(new Date(item.CREATE_TIME))) + '</td>' +
+						'<td>' + item.VEHICLE_NO + '</td>' +
+						'</tr>')
+						.data('database', item)
+						.appendTo('#zd-tabel tbody');
+			}
+			 var currentPage = data.CurrentPage; //当前页数
+	            var pageCount = data.pageCount; //总页数
+	            var options = {
+	           bootstrapMajorVersion: 3, //版本
+	           currentPage: currentPage, //当前页数
+	           totalPages: pageCount, //总页数
+	           numberOfPages: 5,
+	           shouldShowPage:true,//是否显示该按钮
+	          
+	           itemTexts: function (type, page, current) {
+	               switch (type) {
+	                   case "first":
+	                       return "首页";
+	                   case "prev":
+	                       return "上一页";
+	                   case "next":
+	                       return "下一页";
+	                   case "last":
+	                       return "末页";
+	                   case "page":
+	                       return page;
+	               }
+	           },//点击事件，用于通过Ajax来刷新整个list列表
+	           onPageClicked: function (event, originalEvent, type, page) {
+	               $.ajax({
+	            	   type: "POST",
+	           			url: basePath + "terminal/findzd",
+	                   dataType : "json",
+	                   data:'postData={"page":"'+page+
+						'","info":"'+$('#zd-query').val()+
+						'","status":"'+$('#zd-status').val()+
+						'"}',
+						timeout : 180000,
+						dataType: 'json',
+	                   	success: function (data) {
+	                   		$('#zd-tabel tbody').html("");
+	                   		for (var i = 0; i < data.list.length; i++) {
+	            				var item = data.list[i];
+	            				$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+	            						'<td>' + item.TERMINAL_MODEL + '</td>' +
+	            						'<td>' + item.TERMINAL_TYPE + '</td>' +
+	            						'<td>' + item.TERMINAL_NUM + '</td>' +
+	            						'<td>' + (item.CREATE_TIME==""?"":setformat1(new Date(item.CREATE_TIME))) + '</td>' +
+	            						'<td>' + item.VEHICLE_NO + '</td>' +
+	            						'</tr>')
+	            						.data('database', item)
+	            						.appendTo('#zd-tabel tbody');
+	            			} 
+
+	                   }/*success*/
+	               });
+
+	           }
+
+	       };
+	            if(data.list.length==0){
+	            	layer.msg('查询不到该信息！');
+	            }else{
+			       $('#pageLimit').bootstrapPaginator(options);  
+	            }
+		},
+		error: function(){
+		}         
+	});
+}
+	(function ($) {
+		var queryCheckBox = '#zd-tabel tbody input.checkbox[type=checkbox]';
+		var modalPanel = '#zd-modal';
+
+		var clTabel = null;
+
+		/*生成表格数据*/
+		clTabel = new CheckBox('#zd-tabel');
+		$(function () {
+			$('#zdAdd').on('click', function () {
+				findmodel("");
+				findtype();
+				$(modalPanel).modal('show');
+				/*重置*/
+				$('#zd_number').val('');
+				$('#zd-save').off('click').on('click', function () {
+					if($('#zd_number').val()==''){
+						layer.msg('终端编号必须填写！');
+						return false;
+					}	
+// 					var options=$("#zd_model option:selected"); 
+// 					alert(options.text())
+					$.ajax({
+						 type: "POST",
+						url: basePath + "terminal/addzd",
+						data:'postData={"model":"'+$('#zd_model').val()+
+									'","type":"'+$('#zd_type').val()+
+									'","number":"'+$('#zd_number').val()+
+// 									'","seat":"'+$('#zd_seat').val()+
+									'","seat":"'+3+
+									'"}',
+						timeout : 180000,
+						dataType: 'json',
+						success:function(data){
+							if(data.info=='重复添加'){
+								layer.msg('终端有重复');
+							}else if(data.info=='添加终端成功'){
+								if(data.str==''){
+									$(modalPanel).modal('hide');
+									layer.msg('添加成功');
+									findzd();
+								}else{
+									$(modalPanel).modal('hide');
+									layer.msg('座位'+data.str+'添加失败');
+									findzd();
+								}
+
+							}else{
+								layer.msg('添加终端失败');
+							}
+						},
+						error: function(){
+						}         
+					});
+				});
+			});
+			
+				$('#addAll').on('click', function () {
+					findmodel("");
+					findtype();
+					$(modalPanel).modal('show');
+					/*重置*/
+					$('#zd_model').val('');
+					$('#zd_type').val('');
+					$('#zd_number').val('');
+
+					$('#zd-save').off('click').on('click', function () {
+						$.ajax({
+							 type: "POST",
+							url: basePath + "terminal/addAll",
+							data:'postData={"model":"'+$('#zd_model').val()+
+											'","type":"'+$('#zd_type').val()+
+											'","number":"'+$('#zd_number').val()+
+// 											'","seat":"'+$('#zd_seat').val()+
+											'","seat":"'+3+
+											'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='添加完成'){
+									$(modalPanel).modal('hide');
+									layer.msg('添加完成');
+									findzd();
+								}else{
+									layer.msg('添加失败');
+								}
+							},
+							error: function(){
+							}         
+						});
+				});
+				});
+			$('#zdUpd').on('click', function () {
+				if ($(queryCheckBox + ':checked').length === 1) {
+					var item = $(queryCheckBox + ':checked').parents('tr').data('database');
+					$(modalPanel).modal('show');
+					/*赋值*/
+					$('#zd_number').val(item.TERMINAL_NUM);
+// 					$('#zd_seat').val(item.SEAT_NO);
+					findmodel(item.TERMINAL_MODEL);
+					findtype();
+					/*事件*/
+					$('#zd-save').off('click').on('click', function () {
+						if($('#zd_number').val()==''){
+							layer.msg('终端编号必须填写！');
+							return false;
+						}	
+						$.ajax({
+							 type: "POST",
+							url: basePath + "terminal/editzd",
+							data:'postData={"model":"'+$('#zd_model').val()+
+											'","type":"'+$('#zd_type').val()+
+											'","number":"'+$('#zd_number').val()+
+// 											'","seat":"'+$('#zd_seat').val()+
+											'","seat":"'+3+
+											'","id":"'+item.ID+
+											'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='重复添加'){
+									layer.msg('终端有重复');
+								}else if(data.info=='修改终端成功'){
+									if(data.str==''){
+										$(modalPanel).modal('hide');
+										layer.msg('修改成功');
+										findzd();
+									}else{
+										$(modalPanel).modal('hide');
+										layer.msg('座位'+data.str+'修改失败');
+										findzd();
+									}
+
+								}else{
+									layer.msg('修改终端失败');
+								}
+							},
+							error: function(){
+							}         
+						});
+					});
+				} else {
+					layer.msg('必须选中一行');
+				}
+			});
+			$('#zdDel').on('click', function () {
+				if ($(queryCheckBox + ':checked').length > 0) {
+					var postdata = [];
+					layer.confirm('你确定要删除选中的数据', {
+						btn: ['删除', '取消'],
+						offset: '100px'
+					}, function (layerIndex) {
+						// 遍历要删除的数据
+						$(queryCheckBox + ':checked').parents('tr').each(function (index, item) {
+							postdata.push($(item).data('database'));
+							console.info('each:', $(item).data('database'), postdata);
+						});
+						var ids = "";
+						for (var int = 0; int < postdata.length; int++) {
+							ids += postdata[int].ID+",";
+						}
+						$.ajax({
+							 type: "POST",
+							url: basePath + "terminal/delzd",
+							data:'postData={"id":"'+ids+'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='部分数据删除失败'){
+									layer.close(layerIndex);
+									layer.msg(data.num+'数据有下级关联,部分数据删除失败');
+									findzd();
+								}else{
+									if(data.info=='删除成功'){
+										layer.close(layerIndex);
+										layer.msg('删除成功');
+										findzd();
+									}else{
+										layer.close(layerIndex);
+										layer.msg('删除失败');
+									}
+								}	
+							},
+							error: function(){
+							}         
+						});
+					}, function (layerIndex) {
+						layer.close(layerIndex);
+					});
+				} else {
+					layer.msg('至少选中一行');
+				}
+			});
+
+			$('#zd-save').on('click', function () {
+				$('#zd-modal').modal('hide');
+			});
+		});
+	})(jQuery);
+	function findmodel(obj){
+		$.ajax({
+			type: "POST",
+			async:false,
+			url: basePath + "common/findmodel",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#zd_model").empty();
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].name){
+							$("#zd_model").append('<option value="'+data.datas[i].name+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#zd_model").append('<option value="'+data.datas[i].name+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#zd_model").append('<option value="'+data.datas[i].name+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findzdbh(){
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findzd",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#zd-query").empty();
+				$("#zd-query").append('<option value="" >默认(为空)</option>');
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#zd-query").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#zd-query").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#zd-query").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	$('#clDc').on('click', function() {
+		url = basePath + "user/findzdexcle?info="+$("#zd-query").val(), window.open(url)
+});
+</script>
+</body>
+</html>

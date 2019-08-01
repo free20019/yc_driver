@@ -1,0 +1,76 @@
+/*琛ㄥ崟甯冨眬*/
+.query-box .form-group {
+	display: inline-block;
+	margin-bottom: 0;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	vertical-align: middle;
+}
+.modals-box .form-group {
+	margin-bottom: 10px;
+}
+.query-box .control-label,
+.modals-box .control-label {
+	width: 6em;
+	margin-bottom: 0;
+	vertical-align: middle;
+}
+.query-box .control-label {
+	text-align: right;
+}
+.query-box .form-control,
+.modals-box .form-control {
+	display: inline-block;
+	vertical-align: middle;
+}
+.query-box .form-control {
+	width: 160px;
+}
+.modals-box .form-control {
+	width: calc(100% - 7.5em);
+}
+
+.table {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+/*涓嬫媺妗�/
+.iFComboBox {  position: relative;  display: inline-block; border: 1px solid #ccc; min-width: 180px; min-height: 30px;  }
+.iFComboBox.iFColorGreen {  border-color: #11C876;  }
+.iFComboBox input[type=text] {  width: calc(100% - 44px);  height: 18px;  line-height: 18px;  padding: 2px 8px;  border: none;  outline: none;  font-size: 14px;  color: #2f2e78;  }
+.iFComboBox.iFColorGreen input[type=text] {  color: #1e8c5e;  }
+.iFComboBox a {  position: absolute;  top: 0;  right: 0;  width: 22px;  height: 22px;  line-height: 22px; /*text-align: left;*/  text-decoration: none;  color: #8adaff;  background: transparent;  }
+.iFComboBox.iFColorGreen a {  background: #11C876;  }
+.iFComboBox a:before {  content: '\e606';  position: absolute;  top: calc(50% - 6px);  right: 5px;  width: 100%;  height: 100%;  font-family: iconfont;  text-align: center;  color: #999999;  -webkit-transform: rotate(0deg);  -moz-transform: rotate(0deg);  -ms-transform: rotate(0deg);  -o-transform: rotate(0deg);  transform: rotate(0deg);  -webkit-transition: transform .3s;  -moz-transition: transform .3s;  -o-transition: transform .3s;  transition: transform .3s;  }
+.iFComboBox.selected a:before {  transform: rotate(180deg);  }
+.iFComboBox .iFList {  display: none;  position: absolute;  top: 100%;  left: 0;  width: 100%;  margin-left: -1px;  border: 1px solid #8ad8ff;  background: #ffffff;  z-index: 10;  max-height: 300px;  overflow: auto;  }
+.iFComboBox.iFColorGreen .iFList {  border-color: #11C876;  }
+.iFComboBox.selected .iFList {  display: block;  }
+.iFComboBox .iFList li {  padding: 2px 8px;  color: #3a3989;  border-bottom: 1px solid #efefef;  white-space: nowrap;overflow: hidden;}
+.iFComboBox.iFColorGreen .iFList li {  font-weight: bold;  color: #11C876;  border-bottom-color: #11C876;  }
+.iFComboBox .iFList li.selected, .iFComboBox .iFList li:hover {  background: #8ad8ff;  }
+.iFComboBox.iFColorGreen .iFList li.selected, .iFComboBox.iFColorGreen .iFList li:hover {  background: #11C876;  }
+.iFComboBox .iFList li:last-child {  border-bottom: none;  }
+
+.iFCheckBox {  vertical-align: middle;  }
+.iFInlineItem {  display: inline-block;  position: relative;  margin-bottom: 5px;  }
+.iFBtnItem {  height: 40px;  line-height: 40px;  text-align: center;  }
+.iFW50 .iFSubItem {  float: left;  width: 50%;  }
+.iFWAuto > .iFSubItem {  float: left;  }
+.iFW33 .iFSubItem {  float: left;  width: 33%;  }
+.iFW50 .iFSubItem {  float: left;  width: 50%;  }
+.iFSubItem {  white-space: nowrap;  }
+
+.tableDiv{min-height: calc(100% - 150px);}
+.table-condensed > tbody > tr > td{padding: 5px;white-space: nowrap;line-height: 24px;overflow: hidden;}
+.table-condensed > tbody > tr:hover{ background: #0088cc47;    white-space: normal;overflow: auto }
+/* .select2-container--classic .select2-selection--single{width:160px}
+.select2-selection__arrow{display:none}
+.smSelect2{display:inline-block}  */
+
+.modal-footer{text-align: center;}
+.select2-container .select2-selection--single{
+	height: 34px;
+}

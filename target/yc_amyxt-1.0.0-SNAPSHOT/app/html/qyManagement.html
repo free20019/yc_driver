@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>企业管理</title>
+	<link rel="stylesheet" href="../../resources/style/reset.css">
+	<link rel="stylesheet" href="../../resources/style/iconfont.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.css">
+	<link rel="stylesheet" href="../../resources/style/main.css">
+	<style>
+	</style>
+</head>
+<body>
+<div class="container-fluid">
+	<div class="form-inline query-box">
+	<div class="form-group">
+			<label for="s_province" class="control-label">选择省</label>
+				<select class="form-control " id="s_province" placeholder="选择省" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="s_city" class="control-label">选择市</label>
+				<select class="form-control " id="s_city" placeholder="选择市" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="qy_channel" class="control-label">渠道</label>
+				<select class="form-control select2" id="qyxl_channel" placeholder="渠道" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="qy_company" class="control-label">企业</label>
+				<select class="form-control select2" id="qyxl_company" placeholder="企业" style="width: 160px;">
+				</select>
+		</div>
+		<button class="btn btn-primary btn-sm" onclick="findqy();">查询</button>
+		<button class="btn btn-primary btn-sm" id="qyAdd" data-toggle="modal">添加</button>
+		<button class="btn btn-primary btn-sm" id="qyUpd" data-toggle="modal">修改</button>
+		<button class="btn btn-danger btn-sm" id="qyDel">删除</button>
+<!-- 		<button class="btn btn-primary btn-sm" id="clDc">导出</button> -->
+	</div>
+</div>
+<div class="container-fluid tableDiv" style="overflow-x: auto;">
+<!-- 	<div class="container-fluid" style="margin-top: 10px;">
+		<button class="btn btn-primary btn-sm" id="qyAdd" data-toggle="modal">添加</button>
+		<button class="btn btn-primary btn-sm" id="qyUpd" data-toggle="modal">修改</button>
+		<button class="btn btn-danger btn-sm" id="qyDel">删除</button>
+		<button class="btn btn-primary btn-sm" id="clDc">导出</button>
+	</div> -->
+	<table class="table table-striped table-hover table-condensed" id="qy-tabel">
+		<thead>
+		<tr>
+			<th width="40"><input type="checkbox" class="checkboxAll"></th>
+			<th width="90">序号</th>
+			<th width="130">省市</th>
+			<th width="130">渠道</th>
+			<th width="130">公司</th>
+			<th width="130">联系人</th>
+			<th width="130">电话号码</th>
+			<th width="130">手机号码</th>
+			<th width="130">提成率</th>
+			<th width="130">录入时间</th>
+		</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+<div style="text-align: center">
+		<ul id="pageLimit"></ul> 
+	</div>
+<!-- Modal -->
+<div class="modal fade container-fluid" id="qy-modal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+					aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">企业信息</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal">			
+					<div class="form-group">
+						<label for="qy_channel" class="col-sm-2 control-label">渠道</label>
+						<div class="col-sm-8">
+							<select class="form-control select2" id="qy_channel" placeholder="渠道" style="width: 100%;">
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="qy_company" class="col-sm-2 control-label">企业名称</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="qy_company" placeholder="企业名称">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="qy_contacts" class="col-sm-2 control-label">联系人</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="qy_contacts" placeholder="联系人">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="qy_telNumber" class="col-sm-2 control-label">电话号码</label>
+						<div class="col-sm-8">
+							<input type="tel" class="form-control" id="qy_telNumber" placeholder="电话号码" >
+						</div>
+					</div> 	
+					<div class="form-group">
+						<label for="qy_phoneNumber" class="col-sm-2 control-label">手机号码</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="qy_phoneNumber" placeholder="手机号码">
+						</div>
+					</div> 
+					<div class="form-group">
+						<label for="qy_revenue" class="col-sm-2 control-label">提成率</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control" id="qy_revenue" placeholder="请输入小数">
+						</div>
+					</div>	
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="qy-save">提交</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="../../resources/script/jquery-1.12.1.min.js"></script>
+<script src="../../resources/script/bootstrap/js/bootstrap.js"></script>
+<script src="../../resources/script/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="../../resources/script/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script src="../../resources/script/layer/layer.js"></script>
+<script src="../../resources/script/util.js"></script>
+<script src="../../resources/checkbox.js"></script>
+<script src="../../resources/bootstrap-paginator.js"></script>
+<script src="../../resources/script/My97DatePicker/WdatePicker.js"></script>
+<script src="../../resources/script/select2/dist/js/i18n/zh-CN.js"></script>
+<script src="../../resources/script/select2/dist/js/select2.min.js"></script>
+<script src="common.js"></script>
+<script src="../../resources/area.js"></script>
+<script type="text/javascript">_init_area();</script>
+<script>
+findxlqd();
+findxlqy();
+// $.fn.modal.Constructor.prototype.enforceFocus = function () {}
+// $(".select2").select2({
+// theme: "classic",
+//     language: "zh-CN",
+//     width:'resolve'
+// });
+$.fn.modal.Constructor.prototype.enforceFocus = function () {}
+$(document).ready(function() {
+	  $(".select2").select2({  
+			language: "zh-CN",  //设置 提示语言
+	        tags:true,  
+	        createTag:function (decorated, params) {  
+	            return null;  
+	        },  
+	    });
+	});
+findqy();
+function findqy(){
+	$.ajax({
+		 type: "POST",
+		url: basePath + "company/findqy",
+		data:'postData={"page":"'+1+
+		 '","province":"'+$('#s_province').val()+
+		 '","city":"'+$('#s_city').val()+
+		'","channel":"'+$('#qyxl_channel').val()+
+		'","company":"'+$('#qyxl_company').val()+
+		'"}',
+		timeout : 180000,
+		dataType: 'json',
+		success:function(data){
+			$('#qy-tabel tbody').html("");
+			for (var i = 0; i < data.list.length; i++) {
+				var item = data.list[i];
+				$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+						'<td>' + item.PROVINCE +','+item.CITY + '</td>' +
+						'<td>' + item.CHANNEL_NAME + '</td>' +
+						'<td>' + item.COMPANY_NAME + '</td>' +
+						'<td>' + item.USER_NAME + '</td>' +
+						'<td>' + item.TELPHONE_NUM + '</td>' +
+						'<td>' + item.PHONE_NUM + '</td>' +
+						'<td>' + item.COMPANY_REVENUE + '</td>' +
+						'<td>' + (item.ADD_TIME==""?"":setformat1(new Date(item.ADD_TIME))) + '</td>' +
+						'</tr>')
+						.data('database', item)
+						.appendTo('#qy-tabel tbody');
+			}
+			 var currentPage = data.CurrentPage; //当前页数
+	            var pageCount = data.pageCount; //总页数
+	            var options = {
+	           bootstrapMajorVersion: 3, //版本
+	           currentPage: currentPage, //当前页数
+	           totalPages: pageCount, //总页数
+	           numberOfPages: 5,
+	           shouldShowPage:true,//是否显示该按钮
+	          
+	           itemTexts: function (type, page, current) {
+	               switch (type) {
+	                   case "first":
+	                       return "首页";
+	                   case "prev":
+	                       return "上一页";
+	                   case "next":
+	                       return "下一页";
+	                   case "last":
+	                       return "末页";
+	                   case "page":
+	                       return page;
+	               }
+	           },//点击事件，用于通过Ajax来刷新整个list列表
+	           onPageClicked: function (event, originalEvent, type, page) {
+	               $.ajax({
+	            	   type: "POST",
+	           			url: basePath + "company/findqy",
+	                   dataType : "json",
+	                   data:'postData={"page":"'+page+
+			          		 '","province":"'+$('#s_province').val()+
+			        		 '","city":"'+$('#s_city').val()+
+			        		'","channel":"'+$('#qyxl_channel').val()+
+			        		'","company":"'+$('#qyxl_company').val()+
+						'"}',
+						timeout : 180000,
+						dataType: 'json',
+	                   	success: function (data) {
+	                   		$('#qy-tabel tbody').html("");
+	                   		for (var i = 0; i < data.list.length; i++) {
+	            				var item = data.list[i];
+	            				$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+	            						'<td>' + item.PROVINCE +','+item.CITY + '</td>' +
+	            						'<td>' + item.CHANNEL_NAME + '</td>' +
+	            						'<td>' + item.COMPANY_NAME + '</td>' +
+	            						'<td>' + item.USER_NAME + '</td>' +
+	            						'<td>' + item.TELPHONE_NUM + '</td>' +
+	            						'<td>' + item.PHONE_NUM + '</td>' +
+	            						'<td>' + item.COMPANY_REVENUE + '</td>' +
+	            						'<td>' + (item.ADD_TIME==""?"":setformat1(new Date(item.ADD_TIME))) + '</td>' +
+	            						'</tr>')
+	            						.data('database', item)
+	            						.appendTo('#qy-tabel tbody');
+	            			} 
+
+	                   }/*success*/
+	               });
+
+	           }
+
+	       };
+	            if(data.list.length==0){
+	            	layer.msg('查询不到该信息！');
+	            }else{
+			       $('#pageLimit').bootstrapPaginator(options);  
+	            }
+		},
+		error: function(){
+		}         
+	});
+}
+	(function ($) {
+		var queryCheckBox = '#qy-tabel tbody input.checkbox[type=checkbox]';
+		var modalPanel = '#qy-modal';
+
+		var clTabel = null;
+
+		/*生成表格数据*/
+		clTabel = new CheckBox('#qy-tabel');
+		
+		$(function () {
+			$('#qyAdd').on('click', function () {
+				findqd();
+				$(modalPanel).modal('show');
+				/*重置*/
+				$('#qy_channel').val('');
+				$('#qy_company').val('');
+				$('#qy_contacts').val('');
+				$('#qy_telNumber').val('');
+				$('#qy_phoneNumber').val('');
+				$('#qy-save').off('click').on('click', function () {
+					if($('#qy_company').val()==''){
+						layer.msg('公司名必须填写！');
+						return false;
+					}	
+					if($('#qy_channel').val()==''){
+						layer.msg('渠道必须填写！');
+						return false;
+					}	
+					$.ajax({
+						 type: "POST",
+						url: basePath + "company/addqy",
+						data:'postData={"channel":"'+$('#qy_channel').val()+
+									'","company":"'+$('#qy_company').val()+
+									'","contacts":"'+$('#qy_contacts').val()+
+									'","telNumber":"'+$('#qy_telNumber').val()+
+									'","phoneNumber":"'+$('#qy_phoneNumber').val()+
+									'","revenue":"'+$('#qy_revenue').val()+
+									'"}',
+						timeout : 180000,
+						dataType: 'json',
+						success:function(data){
+							if(data.info=='不存在'){
+								layer.msg('渠道不存在,请重新"添加"');
+							}else if(data.info=='重复添加'){
+								layer.msg('公司名有重复');
+							}else if(data.info=='添加成功'){
+								$(modalPanel).modal('hide');
+								layer.msg('添加成功');
+								findqy();
+							}else{
+								layer.msg('添加失败');
+							}
+						},
+						error: function(){
+						}         
+					});
+				});
+			});
+			$('#qyUpd').on('click', function () {
+				findqd();
+				if ($(queryCheckBox + ':checked').length === 1) {
+					var item = $(queryCheckBox + ':checked').parents('tr').data('database');
+					$(modalPanel).modal('show');
+					/*赋值*/
+					$('#qy_company').val(item.COMPANY_NAME);
+					$('#qy_channel').val(item.CHANNEL_NAME);
+					$('#qy_contacts').val(item.USER_NAME);
+					$('#qy_telNumber').val(item.TELPHONE_NUM);
+					$('#qy_phoneNumber').val(item.PHONE_NUM);
+					$('#qy_revenue').val(item.COMPANY_REVENUE);
+					/*事件*/
+					$('#qy-save').off('click').on('click', function () {
+						if($('#qy_company').val()==''){
+							layer.msg('公司名必须填写！');
+							return false;
+						}
+						if($('#qy_channel').val()==''){
+							layer.msg('渠道必须填写！');
+							return false;
+						}	
+						$.ajax({
+							 type: "POST",
+							url: basePath + "company/editqy",
+							data:'postData={"channel":"'+$('#qy_channel').val()+
+											'","company":"'+$('#qy_company').val()+
+											'","contacts":"'+$('#qy_contacts').val()+
+											'","telNumber":"'+$('#qy_telNumber').val()+
+											'","phoneNumber":"'+$('#qy_phoneNumber').val()+
+											'","revenue":"'+$('#qy_revenue').val()+
+											'","id":"'+item.ID+
+											'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='不存在'){
+									layer.msg('渠道不存在,请重新"修改"');
+								}else if(data.info=='重复添加'){
+									layer.msg('公司名有重复');
+								}else if(data.info=='修改成功'){
+									$(modalPanel).modal('hide');
+									layer.msg('修改成功');
+									findqy();
+								}else{
+									layer.msg('修改失败');
+								}
+							},
+							error: function(){
+							}         
+						});
+					});
+				} else {
+					layer.msg('必须选中一行');
+				}
+			});
+			$('#qyDel').on('click', function () {
+				if ($(queryCheckBox + ':checked').length > 0) {
+					var postdata = [];
+					layer.confirm('你确定要删除选中的数据', {
+						btn: ['删除', '取消'],
+						offset: '100px'
+					}, function (layerIndex) {
+						// 遍历要删除的数据
+						$(queryCheckBox + ':checked').parents('tr').each(function (index, item) {
+							postdata.push($(item).data('database'));
+							console.info('each:', $(item).data('database'), postdata);
+						});
+						var ids = "";
+						for (var int = 0; int < postdata.length; int++) {
+							ids += postdata[int].ID+",";
+						}
+						$.ajax({
+							 type: "POST",
+							url: basePath + "company/delqy",
+							data:'postData={"id":"'+ids+'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='部分数据删除失败'){
+									layer.close(layerIndex);
+									layer.msg(data.num+'数据有下级关联,部分数据删除失败');
+									findqy();
+								}else{
+									if(data.info=='删除成功'){
+										layer.close(layerIndex);
+										layer.msg('删除成功');
+										findqy();
+									}else{
+										layer.close(layerIndex);
+										layer.msg('删除失败');
+									}
+								}	
+							},
+							error: function(){
+							}         
+						});
+					}, function (layerIndex) {
+						layer.close(layerIndex);
+					});
+				} else {
+					layer.msg('至少选中一行');
+				}
+			});
+
+			$('#qy-save').on('click', function () {
+				$('#qy-modal').modal('hide');
+			});
+		});
+	})(jQuery);
+	function findxlqd(){
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findqd",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#qyxl_channel").empty();
+				$("#qyxl_channel").append('<option value="" >默认(为空)</option>');
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#qyxl_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}else{
+							$("#qyxl_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#qyxl_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findxlqy(){
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findqy",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#qyxl_company").empty();
+				$("#qyxl_company").append('<option value="" >默认(为空)</option>');
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#qyxl_company").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#qyxl_company").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#qyxl_company").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findqd(){
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findqd",
+			data:{},
+			timeout : 180000,
+			cache: false,//不缓存
+			dataType: 'json',
+			success:function(data){
+				$("#qy_channel").empty();
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#qy_channel").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#qy_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#qy_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	$('#clDc').on('click', function() {
+		url = basePath + "user/findqyexcle?info="+$("#qy_company").val(), window.open(url)
+});
+</script>
+</body>
+</html>

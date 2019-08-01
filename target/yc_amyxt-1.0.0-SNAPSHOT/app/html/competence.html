@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>权限</title>
+	<link rel="stylesheet" href="../../resources/style/reset.css">
+	<link rel="stylesheet" href="../../resources/style/iconfont.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="../../resources/script/ztree/css/demo.css">
+	<link rel="stylesheet" href="../../resources/script/ztree/css/zTreeStyle/zTreeStyle.css">
+	<link rel="stylesheet" href="../../resources/style/main.css">
+	<style>
+
+	</style>
+</head>
+<body>
+<div class="container-fluid">
+	<div action="" class="form-inline">
+		<div class="form-group" style="padding-top: 4px; padding-bottom: 4px; margin-left: 20px;">
+			<label for="competence-query">关键字</label>
+			<input type="text" class="form-control input-sm" id="competence-query" placeholder="关键字">
+		</div>
+		<button class="btn btn-primary btn-sm" onclick="findpower();">查询</button>
+		<button class="btn btn-primary btn-sm" id="competenceAdd" data-toggle="modal">添加</button>
+		<button class="btn btn-primary btn-sm" id="competenceUpd" data-toggle="modal">修改</button>
+		<button class="btn btn-danger btn-sm" id="competenceDel">删除</button>
+		<button class="btn btn-primary btn-sm" id="competenceDc">导出</button>
+	</div>
+</div>
+<div class="container-fluid tableDiv" style="overflow-x: auto;">
+	<table class="table table-striped table-hover table-condensed" id="competence-tabel">
+		<thead>
+		<tr>
+			<th width="40"><input type="checkbox" class="checkboxAll"></th>
+			<th width="90">序号</th>
+			<th width="130">权限名</th>
+			<th>权限</th>
+<!-- 			<th>权限</th> -->
+		</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="competence-modalUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+					aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">用户信息</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal" style="padding-right: 50px;">
+					<div class="form-group">
+						<label for="competence-character" class="col-sm-2 control-label">权限名称</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="competence-character" placeholder="权限名称">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="competence-permissions" class="col-sm-2 control-label">权限</label>
+						<div class="col-sm-10">
+							<table>
+								<tr>
+<!-- 									<td class="tableTitle pointCharX"><label>权限</label></td> -->
+									<td class="tableData">
+										<div>
+											<input id="part_qdgl" name="part_qx" type="CheckBox" value="渠道管理"/>
+											<label for="part_qdgl">渠道管理</label><br><br>
+											<input id="part_qygl" name="part_qx" type="CheckBox" value="企业管理" />
+											<label for="part_qygl">企业管理</label><br><br>
+											<input id="part_czgl" name="part_qx" type="CheckBox" value="车主管理"/>
+											<label for="part_czgl">车主管理</label>
+											&nbsp;
+											<input id="czgl_zj" name="part_qx_but" type="CheckBox" value="车主管理增加" onChange="if(this.checked){$('#part_czgl').prop('checked',true);}"/>
+											<label for="czgl_zj">增加</label>
+											&nbsp;
+											<input id="czgl_sc" name="part_qx_but" type="CheckBox" value="车主管理删除" onChange="if(this.checked){$('#part_czgl').prop('checked',true);}"/>
+											<label for="czgl_sc">删除</label>
+											&nbsp;
+											<input id="czgl_xg" name="part_qx_but" type="CheckBox" value="车主管理修改" onChange="if(this.checked){$('#part_czgl').prop('checked',true);}"/>
+											<label for="czgl_xg">修改</label>
+											<br><br>
+											<input id="part_clgl" name="part_qx" type="CheckBox" value="车辆管理"/>
+											<label for="part_clgl">车辆管理</label>
+											&nbsp;
+											<input id="clgl_zj" name="part_qx_but" type="CheckBox" value="车辆管理增加" onChange="if(this.checked){$('#part_clgl').prop('checked',true);}"/>
+											<label for="clgl_zj">增加</label>
+											&nbsp;
+											<input id="clgl_sc" name="part_qx_but" type="CheckBox" value="车辆管理删除" onChange="if(this.checked){$('#part_clgl').prop('checked',true);}"/>
+											<label for="clgl_sc">删除</label>
+											&nbsp;
+											<input id="clgl_xg" name="part_qx_but" type="CheckBox" value="车辆管理修改" onChange="if(this.checked){$('#part_clgl').prop('checked',true);}"/>
+											<label for="clgl_xg">修改</label>
+											<br><br>
+<!-- 											<input id="part_jsygl" name="part_qx" type="CheckBox" value="驾驶员管理"/> -->
+<!-- 											<label for="part_jsygl">驾驶员管理</label><br><br> -->
+											
+											<input id="part_zdgl" name="part_qx" type="CheckBox" value="终端管理"/>
+											<label for="part_zdgl">终端管理</label><br><br>
+											<input id="part_azgl" name="part_qx" type="CheckBox" value="安装管理" />
+											<label for="part_azgl">安装管理</label><br><br>
+											
+											<input id="part_ddgl" name="part_qx" type="CheckBox" value="订单管理"/>
+											<label for="part_wxsh">订单管理</label><br><br>
+											<input id="part_qsgl" name="part_qx" type="CheckBox" value="清算管理"/>
+											<label for="part_dhhf">清算管理</label><br><br>
+											
+											<input id="part_yhgl" name="part_qx" type="CheckBox" value="用户管理"/>
+											<label for="part_yhgl">用户管理</label>
+											&nbsp;
+											<input id="yhgl_zj" name="part_qx_but" type="CheckBox" value="用户管理增加" onChange="if(this.checked){$('#part_yhgl').prop('checked',true);}"/>
+											<label for="yhgl_zj">增加</label>
+											&nbsp;
+											<input id="yhgl_sc" name="part_qx_but" type="CheckBox" value="用户管理删除" onChange="if(this.checked){$('#part_yhgl').prop('checked',true);}"/>
+											<label for="yhgl_sc">删除</label>
+											&nbsp;
+											<input id="yhgl_xg" name="part_qx_but" type="CheckBox" value="用户管理修改" onChange="if(this.checked){$('#part_yhgl').prop('checked',true);}"/>
+											<label for="yhgl_xg">修改</label>
+											<br><br>
+											<input id="part_qxgl" name="part_qx" type="CheckBox" value="权限管理"/>
+											<label for="part_qxgl">权限管理</label>
+											&nbsp;
+											<input id="qxgl_zj" name="part_qx_but" type="CheckBox" value="权限管理增加" onChange="if(this.checked){$('#part_qxgl').prop('checked',true);}"/>
+											<label for="qxgl_zj">增加</label>
+											&nbsp;
+											<input id="qxgl_sc" name="part_qx_but" type="CheckBox" value="权限管理删除" onChange="if(this.checked){$('#part_qxgl').prop('checked',true);}"/>
+											<label for="qxgl_sc">删除</label>
+											&nbsp;
+											<input id="qxgl_xg" name="part_qx_but" type="CheckBox" value="权限管理修改" onChange="if(this.checked){$('#part_qxgl').prop('checked',true);}"/>
+											<label for="qxgl_xg">修改</label>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" id="competence-save">提交</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="../../resources/script/jquery-1.12.1.min.js"></script>
+<script src="../../resources/script/bootstrap/js/bootstrap.js"></script>
+<script src="../../resources/script/ztree/js/jquery.ztree.all.js"></script>
+<script src="../../resources/script/layer/layer.js"></script>
+<script src="../../resources/checkbox.js"></script>
+<script src="../../resources/script/util.js"></script>
+<script>
+findpower();
+$.ajax({
+	 type: "POST",
+	url: basePath + "login/index",
+	data:{},
+	timeout : 180000,
+	dataType: 'json',
+	success:function(data){
+		power_buts = data.power_but;
+		if(power_buts.indexOf('权限管理增加')<0)
+			$("#competenceAdd").hide();
+		if(power_buts.indexOf('权限管理删除')<0)
+			$("#competenceDel").hide();
+		if(power_buts.indexOf('权限管理修改')<0)
+			$("#competenceUpd").hide();
+	},
+	error: function(XMLHttpRequest, textStatus, errorThrown) {
+	}         
+});
+function findpower(){
+	$.ajax({
+		 type: "POST",
+		url: basePath + "user/findpower",
+		data:{ 'info' : $("#competence-query").val() },
+		timeout : 180000,
+		dataType: 'json',
+		success:function(data){
+			$('#competence-tabel tbody').html("");
+			for (var i = 0; i < data.length; i++) {
+				var item = data[i];
+				$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+						'<td>' + item.POWER_NAME + '</td>' +
+						'<td>' + item.POWER_INFO + '</td>' +
+						'</tr>')
+						.data('database', item)
+						.appendTo('#competence-tabel tbody');
+			}
+		},
+		error: function(){
+		}         
+	});
+}
+	(function ($) {
+
+		var queryCheckBox = '#competence-tabel tbody input.checkbox[type=checkbox]';
+		var modalPanel = '#competence-modalUser';
+
+		var competenceTabel = new CheckBox('#competence-tabel');
+
+		$(function () {
+
+			$('#competenceAdd').off('click').on('click', function () {
+				$("input[name=part_qx]").prop("checked", false);  
+				$("input[name=part_qx_but]").prop("checked", false);  
+				$(modalPanel).modal('show');
+				/*重置*/
+				$('#competence-character').val('');
+				$('#competence-permissions').val('');
+				/*事件*/
+				$('#competence-save').off('click').on('click', function () {
+					var ym = $("input:checkbox[name='part_qx']:checked").map(function(index,elem) {
+			            return $(elem).val();
+			        }).get().join(',');
+			        var text = $("input:checkbox[name='part_qx_but']:checked").map(function(index,elem) {
+			            return $(elem).val();
+			        }).get().join(',');
+			        if($('#competence-character').val()==''){
+						layer.msg('权限名称必须填写！');
+						return false;
+					}
+					if(ym.length<3){
+						layer.msg('权限必须勾选至少一条必须填写！');
+						return false;
+					}
+					$.ajax({
+						 type: "POST",
+						url: basePath + "user/addpower",
+						data:'postData={"power_name":"'+$('#competence-character').val()+
+									'","power_but":"'+text+
+									'","power_info":"'+ym+
+									'"}',
+						timeout : 180000,
+						dataType: 'json',
+						success:function(data){
+							if(data.info=='重复添加'){
+								layer.msg('权限名重复');
+							}else if(data.info=='添加成功'){
+								$(modalPanel).modal('hide');
+								layer.msg('添加成功');
+								findpower();
+							}else{
+								layer.msg('添加失败');
+							}
+						},
+						error: function(){
+						}         
+					});
+				});
+			});
+			$('#competenceUpd').off('click').on('click', function () {
+				if ($(queryCheckBox + ':checked').length === 1) {
+					var item = $(queryCheckBox + ':checked').parents('tr').data('database');
+					$("input[name=part_qx]").prop("checked", false);  
+					$("input[name=part_qx_but]").prop("checked", false);  
+					$(modalPanel).modal('show');
+					/*赋值*/
+					$('#competence-character').val(item.POWER_NAME);
+					var power_info = item.POWER_INFO;
+					check("#part_qdgl",power_info,"渠道管理");
+					check("#part_qygl",power_info,"企业管理");
+					check("#part_czgl",power_info,"车主管理");
+					check("#part_clgl",power_info,"车辆管理");
+					check("#part_jsygl",power_info,"驾驶员管理");
+					
+					check("#part_zdgl",power_info,"终端管理");
+					check("#part_azgl",power_info,"安装管理");
+					
+					check("#part_ddgl",power_info,"订单管理");
+					check("#part_qsgl",power_info,"清算管理");
+					
+					check("#part_yhgl",power_info,"用户管理");
+					check("#part_qxgl",power_info,"权限管理");
+					var power_but = item.POWER_BUT;
+					console.log(power_but)
+					check("#czgl_zj",power_but,"车主管理增加");
+					check("#czgl_sc",power_but,"车主管理删除");
+					check("#czgl_xg",power_but,"车主管理修改");
+					check("#clgl_zj",power_but,"车辆管理增加");
+					check("#clgl_sc",power_but,"车辆管理删除");
+					check("#clgl_xg",power_but,"车辆管理修改");
+					check("#yhgl_zj",power_but,"用户管理增加");
+					check("#yhgl_sc",power_but,"用户管理删除");
+					check("#yhgl_xg",power_but,"用户管理修改");
+					check("#qxgl_zj",power_but,"权限管理增加");
+					check("#qxgl_sc",power_but,"权限管理删除");
+					check("#qxgl_xg",power_but,"权限管理修改");
+					/*事件*/
+					$('#competence-save').off('click').on('click', function () {
+						var ym = $("input:checkbox[name='part_qx']:checked").map(function(index,elem) {
+				            return $(elem).val();
+				        }).get().join(',');
+				        var text = $("input:checkbox[name='part_qx_but']:checked").map(function(index,elem) {
+				            return $(elem).val();
+				        }).get().join(',');
+				        if($('#competence-character').val()==''){
+							layer.msg('权限名称必须填写！');
+							return false;
+						}
+						if(ym.length<3){
+							layer.msg('权限必须勾选至少一条必须填写！');
+							return false;
+						}
+						$.ajax({
+							 type: "POST",
+							url: basePath + "user/editpower",
+							data:'postData={"power_name":"'+$('#competence-character').val()+
+										'","power_but":"'+text+
+										'","power_info":"'+ym+
+										'","id":"'+item.ID+
+										'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='重复添加'){
+									layer.msg('权限名重复');
+								}else if(data.info=='修改成功'){
+									$(modalPanel).modal('hide');
+									layer.msg('修改成功');
+									findpower();
+								}else{
+									layer.msg('修改失败');
+								}
+							},
+							error: function(){
+							}         
+						});
+					});
+				} else {
+					layer.msg('必须选中一行');
+				}
+			});
+			$('#competenceDel').off('click').on('click', function () {
+				if ($(queryCheckBox + ':checked').length > 0) {
+					var postdata = [];
+					layer.confirm('你确定要删除选中的数据', {
+						btn: ['删除', '取消'],
+						offset: '100px'
+					}, function (layerIndex) {
+						// 遍历要删除的数据
+						$(queryCheckBox + ':checked').parents('tr').each(function (index, item) {
+							postdata.push($(item).data('database'));
+							console.info('each:', $(item).data('database'), postdata);
+						});
+						var ids = "";
+						for (var int = 0; int < postdata.length; int++) {
+							ids += postdata[int].ID+",";
+						}
+						$.ajax({
+							 type: "POST",
+							url: basePath + "user/delpower",
+							data:'postData={"id":"'+ids+'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='部分数据删除失败'){
+									layer.close(layerIndex);
+									layer.msg(data.num+'数据有下级关联,部分数据删除失败');
+									findpower();
+								}else{
+									if(data.info=='删除成功'){
+										layer.close(layerIndex);
+										layer.msg('删除成功');
+										findpower();
+									}else{
+										layer.close(layerIndex);
+										layer.msg('删除失败');
+									}
+								}	
+							},
+							error: function(){
+							}
+						});
+					}, function (layerIndex) {
+						layer.close(layerIndex);
+					});
+				} else {
+					layer.msg('至少选中一行');
+				}
+			});
+		});
+	})(jQuery);
+	function check(id,info,but){
+		if(info.indexOf(but)>=0){
+			$(id).prop('checked',true);
+		}
+	}
+	$('#competenceDc').off('click').on('click', function() {
+		url = basePath + "user/findpowerexcle?info="+$("#competence-query").val(), window.open(url)
+});
+</script>
+</body>
+</html>

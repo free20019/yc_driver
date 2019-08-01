@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<description>Spring 数据源、session工厂、事务、日志公共配置</description>
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	<bean id="configure"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+<!--				<value>classpath:config.properties</value>-->
+				<value>classpath:jdbc.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.driverClass}" />
+		<property name="jdbcUrl" value="${jdbc.jdbcUrl}" />
+		<property name="user" value="${jdbc.user}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="initialPoolSize" value="${jdbc.initialPoolSize}" />
+		<property name="minPoolSize" value="${jdbc.minPoolSize}" />
+		<property name="maxPoolSize" value="${jdbc.maxPoolSize}" />
+		<property name="maxIdleTime" value="${jdbc.maxIdleTime}" />
+		<property name="acquireIncrement" value="${jdbc.acquireIncrement}" />
+	</bean>
+
+	<bean id="dataSource2" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.driverClass}" />
+		<property name="jdbcUrl" value="${jdbc.jdbcUrl2}" />
+		<property name="user" value="${jdbc.user2}" />
+		<property name="password" value="${jdbc.password2}" />
+		<property name="initialPoolSize" value="${jdbc.initialPoolSize}" />
+		<property name="minPoolSize" value="${jdbc.minPoolSize}" />
+		<property name="maxPoolSize" value="${jdbc.maxPoolSize}" />
+		<property name="maxIdleTime" value="${jdbc.maxIdleTime}" />
+		<property name="acquireIncrement" value="${jdbc.acquireIncrement}" />
+	</bean>
+
+	<bean id = "jdbcTemplate2"
+         class = "org.springframework.jdbc.core.JdbcTemplate">
+         <property name = "dataSource" ref="dataSource2"/>
+    </bean>
+
+	<bean id = "jdbcTemplate"
+         class = "org.springframework.jdbc.core.JdbcTemplate">
+         <property name = "dataSource" ref="dataSource"/>
+    </bean>
+
+	<!-- 以下是事务的管理 -->
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="query*" read-only="true" />
+			<tx:method name="call*" read-only="true" />
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="remove*" propagation="REQUIRED" />
+			<tx:method name="refresh*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config proxy-target-class="false">
+		<aop:pointcut id="serviceOperation"
+			expression="execution(* mvc..service..*(..))||execution(* mvc..jms..*(..))" />
+		<aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice" />
+	</aop:config>
+	
+
+	<!-- 日志管理切面（现已注释，改用注解方式进行切面 david.chou）
+<bean id="logsService" class="com.hxcy.wlan.mvc.service.SysLogInterceptor"></bean>
+	<aop:config>
+		<aop:pointcut id="logsPointcut" expression="execution(* com.hxcy.wlan.mvc..service..*(..))"  />
+		<aop:aspect id="s" ref="logsService">
+			<aop:after pointcut-ref="logsPointcut" method="logAfterReturning" />
+		</aop:aspect>
+	</aop:config>    -->
+
+</beans>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>驾驶员管理</title>
+	<link rel="stylesheet" href="../../resources/style/reset.css">
+	<link rel="stylesheet" href="../../resources/style/iconfont.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.css">
+	<link rel="stylesheet" href="../../resources/style/main.css">
+	<style></style>
+</head>
+<body>
+<div class="container-fluid">
+	<div class="form-inline query-box">
+	<div class="form-group">
+			<label for="s_province" class="control-label">选择省</label>
+				<select class="form-control " id="s_province" placeholder="选择省" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="s_city" class="control-label">选择市</label>
+				<select class="form-control " id="s_city" placeholder="选择市" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="jsyxl_channel" class="control-label">渠道</label>
+				<select class="form-control select2" id="jsyxl_channel" placeholder="渠道" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="jsyxl_company" class="control-label">企业</label>
+				<select class="form-control select2" id="jsyxl_company" placeholder="企业" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="jsy_choose" class="control-label">选择条件</label>
+				<select class="form-control" id="jsy_choose" placeholder="选择条件" style="width: 110px;" onchange="findchoose()">
+					<option value="TB_CAR_OWNER">车主</option>
+					<option value="TB_VEHICLE">车牌</option>
+					<option value="TB_DRIVER">驾驶员</option>
+				</select>
+		</div>
+		<div class="form-group">
+				<select class="form-control select2" id="jsy_choosed" placeholder="选择条件" style="width: 160px;" >
+				</select>
+		</div>
+		<button class="btn btn-primary btn-sm" onclick="findjsy();">查询</button>&nbsp;&nbsp;&nbsp;&nbsp;
+		<button class="btn btn-primary btn-sm" id="jsyAdd" data-toggle="modal">添加</button>
+		<button class="btn btn-primary btn-sm" id="jsyUpd" data-toggle="modal">修改</button>
+		<button class="btn btn-danger btn-sm" id="jsyDel">删除</button>
+<!-- 		<button class="btn btn-primary btn-sm" id="clDc">导出</button> -->
+	</div>
+</div>
+<div class="container-fluid tableDiv" style="overflow-x: auto;">
+	<table class="table table-striped table-hover table-condensed" id="jsy-tabel">
+		<thead>
+		<tr>
+			<th width="40"><input type="checkbox" class="checkboxAll"></th>
+			<th width="90">序号</th>
+			<th width="130">省市</th>
+			<th width="130">渠道</th>
+			<th width="130">企业</th>
+			<th width="130">车主</th>
+			<th width="130">车牌号码</th>
+			<th width="130">车辆类型</th>
+			<th width="130">驾驶员</th>
+			<th width="130">身份证号</th>
+			<th width="130">电话号码</th>
+			<th width="130">添加时间</th>
+		</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+<div style="text-align: center">
+	<ul id="pageLimit"></ul> 
+</div>
+<!-- Modal -->
+<div class="modal fade container-fluid" id="jsy-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+					aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">驾驶员信息</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal">			
+					<div class="form-group">
+						<label for="jsy_vehicle" class="col-sm-2 control-label">选择车辆</label>
+						<div class="col-sm-10">
+							<select class="form-control select2" id="jsy_vehicle" placeholder="选择车辆">
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="jsy_name" class="col-sm-2 control-label">驾驶员名</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="jsy_name" placeholder="驾驶员姓名">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="jsy_idCard" class="col-sm-2 control-label">身份证号</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="jsy_idCard" placeholder="身份证号">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="jsy_phoneNum" class="col-sm-2 control-label">电话号码</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="jsy_phoneNum" placeholder="电话号码">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="cl-save">提交</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="../../resources/script/jquery-1.12.1.min.js"></script>
+<script src="../../resources/script/bootstrap/js/bootstrap.js"></script>
+<script src="../../resources/script/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="../../resources/script/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script src="../../resources/script/layer/layer.js"></script>
+<script src="../../resources/script/util.js"></script>
+<script src="../../resources/checkbox.js"></script>
+<script src="../../resources/bootstrap-paginator.js"></script>
+<script src="../../resources/script/My97DatePicker/WdatePicker.js"></script>
+<script src="../../resources/script/select2/dist/js/i18n/zh-CN.js"></script>
+<script src="../../resources/script/select2/dist/js/select2.min.js"></script>
+<script src="common.js"></script>
+<script src="../../resources/area.js"></script>
+<script type="text/javascript">_init_area();</script>
+<script>
+findchoose();
+findxlqy();
+findxlqd();
+$.fn.modal.Constructor.prototype.enforceFocus = function () {}
+$(document).ready(function() {
+  $(".select2").select2({  
+		language: "zh-CN",  //设置 提示语言
+        tags:true,  
+        createTag:function (decorated, params) {  
+            return null;  
+        },  
+    });
+});
+findjsy();
+function findjsy(){
+	$.ajax({
+		 type: "POST",
+		url: basePath + "driver/findjsy",
+		data:'postData={"page":"'+1+
+		'","province":"'+$('#s_province').val()+
+		'","city":"'+$('#s_city').val()+
+		'","channel":"'+$('#jsyxl_channel').val()+
+		'","company":"'+$('#jsyxl_company').val()+
+		'","choose":"'+$('#jsy_choose').val()+
+		'","choosed":"'+$('#jsy_choosed').val()+
+		'"}',
+		timeout : 180000,
+		dataType: 'json',
+		success:function(data){
+			$('#jsy-tabel tbody').html("");
+			for (var i = 0; i < data.list.length; i++) {
+				var item = data.list[i];
+				$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+						'<td>' + item.PROVINCE +','+item.CITY + '</td>' +
+						'<td>' + item.CHANNEL_NAME + '</td>' +
+						'<td>' + item.COMPANY_NAME + '</td>' +
+						'<td>' + item.OWNER_NAME + '</td>' +
+						'<td>' + item.VEHICLE_NO + '</td>' +
+						'<td>' + item.TYPE + '</td>' +
+						'<td>' + item.DRIVER_NAME + '</td>' +
+						'<td>' + item.DRIVER_IDCARD + '</td>' +
+						'<td>' + item.PHONE_NUM + '</td>' +
+						'<td>' + (item.CREATE_TIME==""?"":setformat1(new Date(item.CREATE_TIME))) + '</td>' +
+						'</tr>')
+						.data('database', item)
+						.appendTo('#jsy-tabel tbody');
+			}
+			 var currentPage = data.CurrentPage; //当前页数
+	            var pageCount = data.pageCount; //总页数
+	            var options = {
+	           bootstrapMajorVersion: 3, //版本
+	           currentPage: currentPage, //当前页数
+	           totalPages: pageCount, //总页数
+	           numberOfPages: 5,
+	           shouldShowPage:true,//是否显示该按钮
+	          
+	           itemTexts: function (type, page, current) {
+	               switch (type) {
+	                   case "first":
+	                       return "首页";
+	                   case "prev":
+	                       return "上一页";
+	                   case "next":
+	                       return "下一页";
+	                   case "last":
+	                       return "末页";
+	                   case "page":
+	                       return page;
+	               }
+	           },//点击事件，用于通过Ajax来刷新整个list列表
+	           onPageClicked: function (event, originalEvent, type, page) {
+	               $.ajax({
+	            	   type: "POST",
+	           			url: basePath + "driver/findjsy",
+	                   dataType : "json",
+	                   data:'postData={"page":"'+page+
+			           		'","province":"'+$('#s_province').val()+
+			        		'","city":"'+$('#s_city').val()+
+			        		'","channel":"'+$('#jsyxl_channel').val()+
+			        		'","company":"'+$('#jsyxl_company').val()+
+			        		'","choose":"'+$('#jsy_choose').val()+
+			        		'","choosed":"'+$('#jsy_choosed').val()+
+						'"}',
+						timeout : 180000,
+						dataType: 'json',
+	                   	success: function (data) {
+	                   		$('#jsy-tabel tbody').html("");
+	                   		for (var i = 0; i < data.list.length; i++) {
+	            				var item = data.list[i];
+	            				$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+	            						'<td>' + item.PROVINCE +','+item.CITY + '</td>' +
+	            						'<td>' + item.CHANNEL_NAME + '</td>' +
+	            						'<td>' + item.COMPANY_NAME + '</td>' +
+	            						'<td>' + item.OWNER_NAME + '</td>' +
+	            						'<td>' + item.VEHICLE_NO + '</td>' +
+	            						'<td>' + item.TYPE + '</td>' +
+	            						'<td>' + item.DRIVER_NAME + '</td>' +
+	            						'<td>' + item.DRIVER_IDCARD + '</td>' +
+	            						'<td>' + item.PHONE_NUM + '</td>' +
+	            						'<td>' + (item.CREATE_TIME==""?"":setformat1(new Date(item.CREATE_TIME))) + '</td>' +
+	            						'</tr>')
+	            						.data('database', item)
+	            						.appendTo('#jsy-tabel tbody');
+	            			} 
+
+	                   }/*success*/
+	               });
+
+	           }
+
+	       };
+	            if(data.list.length==0){
+	            	layer.msg('查询不到该信息！');
+	            }else{
+			       $('#pageLimit').bootstrapPaginator(options);  
+	            }
+		},
+		error: function(){
+		}         
+	});
+}
+	(function ($) {
+		var queryCheckBox = '#jsy-tabel tbody input.checkbox[type=checkbox]';
+		var modalPanel = '#jsy-modal';
+
+		var clTabel = null;
+
+		/*生成表格数据*/
+		clTabel = new CheckBox('#jsy-tabel');
+		
+		$(function () {
+			$('#jsyAdd').on('click', function () {
+				findcl("");
+				$(modalPanel).modal('show');
+				/*重置*/
+				$('#jsy_name').val('');
+				$('#cl_phoneNum').val('');
+				$('#jsy_idCard').val('');
+				$('#cl-save').off('click').on('click', function () {
+					if($('#jsy_vehicle').val()==''){
+						layer.msg('车牌必须填写！');
+						return false;
+					}
+					if($('#jsy_idCard').val()==''){
+						layer.msg('身份证必须填写！');
+						return false;
+					}
+					if($('#jsy_name').val()==''){
+						layer.msg('驾驶员姓名必须填写！');
+						return false;
+					}
+					var vehicle_no=$("#jsy_vehicle option:selected").text(); 
+					$.ajax({
+						 type: "POST",
+						url: basePath + "driver/addjsy",
+						data:'postData={"vehicle":"'+$('#jsy_vehicle').val()+
+									'","name":"'+$('#jsy_name').val()+
+									'","idCard":"'+$('#jsy_idCard').val()+
+									'","phoneNum":"'+$('#jsy_phoneNum').val()+
+									'","vehicle_no":"'+vehicle_no+
+									'"}',
+						timeout : 180000,
+						dataType: 'json',
+						success:function(data){
+							if(data.info=='存在用户'){
+								layer.msg('身份证号在用户库中已存在');
+							}else if(data.info=='不存在'){
+								layer.msg('车牌不存在,请重新"添加"');
+							}else if(data.info=='重复添加'){
+								layer.msg('身份证号有重复');
+							}else if(data.info=='添加成功'){
+								$(modalPanel).modal('hide');
+								layer.msg('添加成功');
+								findjsy();
+							}else{
+								layer.msg('添加失败');
+							}
+						},
+						error: function(){
+						}         
+					});
+				});
+			});
+			$('#jsyUpd').on('click', function () {
+				if ($(queryCheckBox + ':checked').length === 1) {
+					var item = $(queryCheckBox + ':checked').parents('tr').data('database');
+					$(modalPanel).modal('show');
+					/*赋值*/
+					findcl(item.VEHICLE_ID)
+					$('#jsy_name').val(item.DRIVER_NAME);
+					$('#jsy_idCard').val(item.DRIVER_IDCARD);
+					$('#jsy_phoneNum').val(item.PHONE_NUM);
+					/*事件*/
+					$('#cl-save').off('click').on('click', function () {
+						if($('#jsy_vehicle').val()==''){
+							layer.msg('车牌必须填写！');
+							return false;
+						}
+						if($('#jsy_idCard').val()==''){
+							layer.msg('身份证必须填写！');
+							return false;
+						}
+						if($('#jsy_name').val()==''){
+							layer.msg('驾驶员姓名必须填写！');
+							return false;
+						}
+						var vehicle_no=$("#jsy_vehicle option:selected").text(); 
+						$.ajax({
+							 type: "POST",
+							url: basePath + "driver/editjsy",
+							data:'postData={"vehicle":"'+$('#jsy_vehicle').val()+
+											'","name":"'+$('#jsy_name').val()+
+											'","idCard":"'+$('#jsy_idCard').val()+
+											'","phoneNum":"'+$('#jsy_phoneNum').val()+
+											'","vehicle_no":"'+vehicle_no+
+											'","id":"'+item.ID+
+											'","user_id":"'+item.USER_ID+
+											'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='存在用户'){
+									layer.msg('身份证号在用户库中已存在');
+								}else if(data.info=='不存在'){
+									layer.msg('车牌不存在,请重新"修改"');
+								}else if(data.info=='重复添加'){
+									layer.msg('身份证号有重复');
+								}else if(data.info=='修改成功'){
+									$(modalPanel).modal('hide');
+									layer.msg('修改成功');
+									findjsy();
+								}else{
+									layer.msg('修改失败');
+								}
+							},
+							error: function(){
+							}         
+						});
+					});
+				} else {
+					layer.msg('必须选中一行');
+				}
+			});
+			$('#jsyDel').on('click', function () {
+				if ($(queryCheckBox + ':checked').length > 0) {
+					var postdata = [];
+					layer.confirm('你确定要删除选中的数据', {
+						btn: ['删除', '取消'],
+						offset: '100px'
+					}, function (layerIndex) {
+						// 遍历要删除的数据
+						$(queryCheckBox + ':checked').parents('tr').each(function (index, item) {
+							postdata.push($(item).data('database'));
+							console.info('each:', $(item).data('database'), postdata);
+						});
+						var ids = "";
+						for (var int = 0; int < postdata.length; int++) {
+							ids += postdata[int].ID+",";
+						}
+						var userids = "";
+						for (var int = 0; int < postdata.length; int++) {
+							userids += postdata[int].USER_ID+",";
+						}
+						$.ajax({
+							 type: "POST",
+							url: basePath + "driver/deljsy",
+							data:'postData={"id":"'+ids+
+											'","userid":"'+userids+
+											'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+									if(data.info=='删除成功'){
+										layer.close(layerIndex);
+										layer.msg('删除成功');
+										findjsy();
+									}else{
+										layer.close(layerIndex);
+										layer.msg('删除失败');
+									}							
+							},
+							error: function(){
+							}         
+						});
+					}, function (layerIndex) {
+						layer.close(layerIndex);
+					});
+				} else {
+					layer.msg('至少选中一行');
+				}
+			});
+
+			$('#cl-save').on('click', function () {
+				$('#jsy-modal').modal('hide');
+			});
+		});
+	})(jQuery);
+	function findcl(obj){
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findcl",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#jsy_vehicle").empty();
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#jsy_vehicle").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#jsy_vehicle").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#jsy_vehicle").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findchoose(){
+		var choose=$("#jsy_choose").val();
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findchoose",
+			data:{
+				"choose":choose
+			},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#jsy_choosed").empty();
+				$("#jsy_choosed").append('<option value="" >默认(为空)</option>');
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#jsy_choosed").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#jsy_choosed").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#jsy_choosed").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findxlqd(){
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findqd",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#jsyxl_channel").empty();
+				$("#jsyxl_channel").append('<option value="" >默认(为空)</option>');
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#jsyxl_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}else{
+							$("#jsyxl_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#jsyxl_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findxlqy(){
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findqy",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#jsyxl_company").empty();
+				$("#jsyxl_company").append('<option value="" >默认(为空)</option>');
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#jsyxl_company").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#jsyxl_company").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#jsyxl_company").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	$('#clDc').on('click', function() {
+		url = basePath + "driver/findjsyexcle?info="+$("#cl-query").val(), window.open(url)
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>车载按摩垫管理系统</title>
+	<link rel="shortcut icon" href="#" />
+	<link rel="stylesheet" href="resources/style/reset.css">
+	<link rel="stylesheet" href="resources/script/bootstrap/css/bootstrap.css">
+	<!--<link rel="stylesheet" href="resources/images/bootstrap/css/bootstrap-theme.css">-->
+	<style>
+		html, body {
+			height: 100%;
+		}
+		body {
+			background: url(resources/images/login_bg.png) no-repeat;
+			background-size: 100%;
+		}
+		.panel-login {
+			position: absolute;
+			top: 50%;
+			left: 15%;
+			width: 350px;
+			margin: -166px 0;
+			box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.3);
+		}
+		.login-title {
+			text-align: center;
+		}
+		.login_flot_bg {
+			position: absolute;
+			top: 50%;
+			left: calc(50% + 15%);
+			transform: translate(-50%, -50%);
+			max-width: calc(50% - 20px);
+			max-height: calc(100% - 150px);
+		}
+	</style>
+</head>
+<body>
+<img class="login_flot_bg" src="resources/images/login_flot_bg.png" height="870" width="1096"/>
+<div class="panel panel-difault panel-login">
+	<div class="panel-heading login-title"><h4>车载按摩垫管理系统</h4></div>
+	<div class="panel-body">
+		<form action="" class="form-horizontal">
+			<div class="form-group">
+				<label for="inputUserName" class="col-sm-2 control-label">账号</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="inputUserName" placeholder="账号" onkeydown="KeyDown()">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="inputPassWord" class="col-sm-2 control-label">密码</label>
+				<div class="col-sm-10">
+					<input type="password" class="form-control" id="inputPassWord" placeholder="密码" onkeydown="KeyDown()">
+				</div>
+			</div>
+<!-- 			<div class="form-group"> -->
+<!-- 				<label for="inputType" class="col-sm-2 control-label">类型</label> -->
+<!-- 				<div class="col-sm-10"> -->
+<!-- 					<select name="type" id="inputType" class="form-control"> -->
+<!-- 						<option value="0">出租</option> -->
+<!-- 						<option value="1">非出租</option> -->
+<!-- 					</select> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+			<div class="form-group" style="text-align: center;">
+				<span id="login-ts" style="color:red;"></span>
+<!-- 				<label class="col-sm-6"> -->
+<!-- 					<input type="checkbox"> 保存账号 -->
+<!-- 				</label> -->
+<!-- 				<label class="col-sm-6"> -->
+<!-- 					<input type="checkbox"> 保存密码 -->
+<!-- 				</label> -->
+			</div>
+			<div class="form-group" style="margin-bottom: 0;">
+				<div class="col-sm-12">
+					<button type="button" id="login" class="btn btn-primary" style="width: 100%;">登&nbsp;&nbsp;&nbsp;&nbsp;录</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<script src="resources/script/jquery-1.12.1.min.js"></script>
+<script src="resources/script/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript">
+function KeyDown(){
+	var event=arguments.callee.caller.arguments[0]||window.event;
+    if (event.keyCode == 13){
+        event.returnValue=false;
+        event.cancel = true;
+        $("#login").click();
+    }
+}
+$("#login").on("click",function () {
+	var event=arguments.callee.caller.arguments[0]||window.event;
+    event.preventDefault();
+    $.ajax({
+        url : "login/login",
+        type : 'post',
+        data: {"username":$("#inputUserName").val() ,"password": $("#inputPassWord").val()},
+        dataType: 'json',
+        success:function(data){
+        	console.log(data);
+            if(data.info==="0"){
+            		location.href="index.html";
+            }else{
+                $("#login-ts").text("用户名或密码错误")
+            }
+        },
+        error:function(data){
+        }
+    });
+});
+</script>
+</body>
+</html>

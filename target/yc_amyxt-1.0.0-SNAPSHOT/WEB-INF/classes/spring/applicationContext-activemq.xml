@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+  xmlns="http://www.springframework.org/schema/beans" 
+  xmlns:amq="http://activemq.apache.org/schema/core"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+	<amq:broker useJmx="false" persistent="false">
+		<amq:destinations>
+			<amq:queue id="jms.log" physicalName="${jms.queue.physicalName}" />
+		</amq:destinations>
+		<amq:transportConnectors>
+			<amq:transportConnector uri="${jms.transprotConnector.uri}" />
+		</amq:transportConnectors>
+	</amq:broker>
+
+	<amq:connectionFactory id="jmsConnectionFactory"
+		brokerURL="${jms.connectionFactory.brokerURL}" />
+
+	<amq:queue name="destination" physicalName="${jms.queue.physicalName}" />
+
+	<bean id="jmsTemplate" 
+		class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory">
+			<bean
+				class="org.springframework.jms.connection.SingleConnectionFactory">
+				<property name="targetConnectionFactory"
+					ref="jmsConnectionFactory" />
+			</bean>
+		</property>
+		<property name="messageConverter"
+			ref="messageConverter" />
+	</bean>
+
+	<bean id="messageConverter"
+		class="com.hxcy.wlan.mvc.jms.MessageConverterImpl" />
+
+	<bean id="messageProducer"
+		class="com.hxcy.wlan.mvc.jms.MessageProducerImpl">
+		<property name="template" ref="jmsTemplate" />
+		<property name="destination" ref="destination" />
+	</bean>
+
+	<bean id="messageListener"
+		class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+		<constructor-arg>
+			<bean
+				class="com.hxcy.wlan.mvc.jms.MessageConsumerImpl">
+				<!--property name="mailService" ref="mailService"/-->
+			</bean>
+		</constructor-arg>
+		<property name="defaultListenerMethod" value="handleMessage" />
+		<property name="messageConverter"
+			ref="messageConverter" />
+	</bean>
+
+	<bean id="listenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destination" ref="destination" />
+		<property name="messageListener" ref="messageListener" />
+	</bean>
+</beans>

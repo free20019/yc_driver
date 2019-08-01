@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>安装管理</title>
+	<link rel="stylesheet" href="../../resources/style/reset.css">
+	<link rel="stylesheet" href="../../resources/style/iconfont.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.css">
+	<link rel="stylesheet" href="../../resources/style/main.css">
+	<style>
+	 .w50 {
+			float: left;
+			width: 50%;
+			margin-left: 0;
+			margin-right: 0;
+		}
+	</style>
+</head>
+<body>
+<div class="container-fluid">
+	<div class="form-inline query-box">
+	<div class="form-group">
+			<label for="s_province" class="control-label">选择省</label>
+				<select class="form-control " id="s_province" placeholder="选择省" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="s_city" class="control-label">选择市</label>
+				<select class="form-control " id="s_city" placeholder="选择市" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="az_channel" class="control-label">渠道</label>
+				<select class="form-control select2" id="az_channel" placeholder="渠道" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="az_company" class="control-label">企业</label>
+				<select class="form-control select2" id="az_company" placeholder="企业" style="width: 160px;">
+				</select>
+		</div>
+		<div class="form-group">
+			<label for="az_choose" class="control-label">选择条件</label>
+				<select class="form-control" id="az_choose" placeholder="选择条件" style="width: 160px;" onchange="findchoose()">
+					<option value="TB_CAR_OWNER">车主</option>
+					<option value="TB_VEHICLE">车牌</option>
+					<option value="TB_TERMINAL">终端编号</option>
+				</select>
+		</div>
+		<div class="form-group">
+				<select class="form-control select2" id="az_choosed" placeholder="选择条件" style="width: 160px;" >
+				</select>
+		</div>
+<!-- 		<div class="form-group"> -->
+<!-- 			<label for="" class="control-label">状态</label> -->
+<!-- 				<select class="form-control" id="" placeholder="状态" style="width: 160px;"> -->
+<!-- 					<option value="1">已安装</option> -->
+<!-- 					<option value="0">未安装</option> -->
+<!-- 				</select> -->
+<!-- 		</div> -->
+		<button class="btn btn-primary btn-sm" onclick="findaz();">查询</button>
+		<button class="btn btn-primary btn-sm" id="azAdd" data-toggle="modal">添加</button>
+		<button class="btn btn-primary btn-sm" id="azUpd" data-toggle="modal">修改</button>
+		<button class="btn btn-danger btn-sm" id="azDel">删除</button>
+<!-- 						<button class="btn btn-primary btn-sm" id="azDc">导出</button> -->
+	</div>
+</div>
+<div class="container-fluid tableDiv" style="overflow-x: auto;">
+<!-- 	<table class="table table-striped table-hover table-condensed" id="az-tabel"  style="width: 1845px;"> -->
+	<table class="table table-striped table-hover table-condensed" id="az-tabel" >
+		<thead>
+		<tr>
+				<th width="40"><input type="checkbox" class="checkboxAll"></th>
+				<th width="90">序号</th>
+				<th width="130">省市</th>
+				<th width="130">渠道</th>
+				<th width="130">企业</th>
+				<th width="130">车主</th>
+				<th width="130">车牌号码</th>
+				<th width="130">车辆类型</th>
+				<th width="130">终端类型</th>
+				<th width="130">终端编号</th>
+				<th width="130">安装时间</th>
+		</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+<div style="text-align: center">
+	<ul id="pageLimit"></ul> 
+</div>
+<!-- Modal -->
+<div class="modal fade container-fluid" id="az-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+					aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">车辆信息</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal clearfix">	
+						<div class="form-group">
+							<label for="zd-query" class="col-sm-2 control-label">终端编号</label>
+							<div class="col-sm-10">
+								<select class="form-control select2" id="zd-query" placeholder="终端编号" style="width: 100%;" onchange="findazzd()">
+								</select>
+							</div>
+						</div>
+<!-- 						<button class="btn btn-primary btn-sm" onclick="findazzd();">查询</button> -->
+						<div class="form-group w50">
+							<label class="control-label col-md-4">型号</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control input-sm" id="zd_xh" style="width: 160px;height:34px;" disabled="disabled">
+							</div>
+						</div>
+						<div class="form-group w50">
+							<label class="control-label col-md-4">类型</label>
+							<div class="col-sm-8" >
+								<input type="text" class="form-control input-sm" id="zd_lx" style="width: 160px;height:34px;" disabled="disabled">
+							</div>
+						</div>
+						<div class="form-group w50">
+							<label class="control-label col-md-4">终端编号</label>
+							<div class="col-sm-8" >
+								<input type="text" class="form-control input-sm" id="zd_bh" style="width: 160px;height:34px;" disabled="disabled">
+							</div>
+						</div>
+						<div class="form-group w50">
+							<label class="control-label  col-md-4">录入时间</label>
+							<div class="col-sm-8" >
+								<input type="text" class="form-control input-sm" id="zd_time" style="width: 160px;height:34px;" disabled="disabled">
+							</div>
+						</div>
+						<div class="form-group ">
+							<label class="control-label  col-md-2">当前状态</label>
+							<div class="col-sm-10" >
+								<input type="text" class="form-control" id="zd_zt"disabled="disabled">
+							</div>
+						</div>
+					<div class="form-group">
+						<label for="az_vehicle" class="col-sm-2 control-label">安装车辆</label>
+						<div class="col-sm-10">
+							<select class="form-control select2" id="az_vehicle" placeholder="安装车辆" style="width: 100%;"  onchange="findlx()" >
+							</select>						
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="az_type" class="col-sm-2 control-label">车辆类型</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="az_type" placeholder="车辆类型" disabled="disabled">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="az_terminal" class="col-sm-2 control-label">终端编号</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="az_terminal" placeholder="终端编号" disabled="disabled">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="az-save">提交</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="../../resources/script/jquery-1.12.1.min.js"></script>
+<script src="../../resources/script/bootstrap/js/bootstrap.js"></script>
+<script src="../../resources/script/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="../../resources/script/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script src="../../resources/script/layer/layer.js"></script>
+<script src="../../resources/script/util.js"></script>
+<script src="../../resources/checkbox.js"></script>
+<script src="../../resources/bootstrap-paginator.js"></script>
+<script src="../../resources/script/My97DatePicker/WdatePicker.js"></script>
+<script src="../../resources/script/select2/dist/js/i18n/zh-CN.js"></script>
+<script src="../../resources/script/select2/dist/js/select2.min.js"></script>
+<script src="common.js"></script>
+<script src="../../resources/area.js"></script>
+<script type="text/javascript">_init_area();</script>
+<script>
+findaz();
+findchoose();
+findqy();
+findqd();
+$.fn.modal.Constructor.prototype.enforceFocus = function () {}
+$(document).ready(function() {
+  $(".select2").select2({  
+		language: "zh-CN",  //设置 提示语言
+        tags:true,  
+        createTag:function (decorated, params) {  
+            return null;  
+        },  
+    });
+});
+function findlx(){
+	var cpmhs=$("#az_vehicle").val();
+	$.ajax({
+		type: "POST",
+		url: basePath + "common/findlx",
+		data:{"vhic":cpmhs},
+		timeout : 180000,
+		dataType: 'json',
+		success:function(data){
+			if(data.length>0){
+			$("#az_type").val(data[0].TYPE);				
+			}
+		},
+		error: function(){
+		}         
+	});
+}
+function findazzd(){
+	var terminal="";
+	var terminal=$('#zd-query').val();
+	$.ajax({
+		 type: "POST",
+		url: basePath + "install/findazzd",
+		data:{"terminal":terminal},
+		timeout : 180000,
+		dataType: 'json',
+		success:function(data){
+			if(data.list.length>0){
+				$('#zd_xh').val(data.list[0].TERMINAL_TYPE);	
+				$("#zd_lx").val(data.list[0].TERMINAL_MODEL);	
+				$("#zd_bh").val(data.list[0].TERMINAL_NUM);	
+				$("#zd_time").val(data.list[0].CREATE_TIME==""?"":setformat1(new Date(data.list[0].CREATE_TIME)));
+				$("#zd_zt").val(data.list[0].STATUS);
+				$("#az_terminal").val(data.list[0].TERMINAL_NUM);
+			}
+		},
+		error: function(){
+		}         
+	});
+}
+function findaz(){
+	$.ajax({
+		 type: "POST",
+		url: basePath + "install/findaz",
+		data:'postData={"page":"'+1+
+			'","province":"'+$('#s_province').val()+
+			'","city":"'+$('#s_city').val()+
+			'","channel":"'+$('#az_channel').val()+
+			'","company":"'+$('#az_company').val()+
+			'","choose":"'+$('#az_choose').val()+
+			'","choosed":"'+$('#az_choosed').val()+	
+		'"}',
+		timeout : 180000,
+		dataType: 'json',
+		success:function(data){
+			$('#az-tabel tbody').html("");	
+				for (var i = 0; i < data.list.length; i++) {
+					var item = data.list[i];
+					console.log(item)
+					$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+							'<td>' + item.PROVINCE +','+item.CITY + '</td>' +
+							'<td>' + item.CHANNEL_NAME + '</td>' +
+							'<td>' + item.COMPANY_NAME + '</td>' +
+							'<td>' + item.OWNER_NAME + '</td>' +
+							'<td>' + item.VEHICLE_NO + '</td>' +
+							'<td>' + item.TYPE + '</td>' +
+							'<td>' + item.TERMINAL_TYPE + '</td>' +
+							'<td>' + item.TERMINAL_NUM + '</td>' +
+							'<td>' + (item.ADD_TIME==""?"":setformat1(new Date(item.ADD_TIME))) + '</td>' +
+							'</tr>')
+							.data('database', item)
+							.appendTo('#az-tabel tbody');
+				}
+			 var currentPage = data.CurrentPage; //当前页数
+	            var pageCount = data.pageCount; //总页数
+	            var options = {
+	           bootstrapMajorVersion: 3, //版本
+	           currentPage: currentPage, //当前页数
+	           totalPages: pageCount, //总页数
+	           numberOfPages: 5,
+	           shouldShowPage:true,//是否显示该按钮
+	          
+	           itemTexts: function (type, page, current) {
+	               switch (type) {
+	                   case "first":
+	                       return "首页";
+	                   case "prev":
+	                       return "上一页";
+	                   case "next":
+	                       return "下一页";
+	                   case "last":
+	                       return "末页";
+	                   case "page":
+	                       return page;
+	               }
+	           },//点击事件，用于通过Ajax来刷新整个list列表
+	           onPageClicked: function (event, originalEvent, type, page) {
+	               $.ajax({
+	            	   type: "POST",
+	           			url: basePath + "install/findaz",
+	                   dataType : "json",
+	                   data:'postData={"page":"'+page+
+				       			'","province":"'+$('#s_province').val()+
+				    			'","city":"'+$('#s_city').val()+
+				    			'","channel":"'+$('#az_channel').val()+
+				    			'","company":"'+$('#az_company').val()+
+				    			'","choose":"'+$('#az_choose').val()+
+				    			'","choosed":"'+$('#az_choosed').val()+	
+						'"}',
+						timeout : 180000,
+						dataType: 'json',
+	                   	success: function (data) {
+	                   		$('#az-tabel tbody').html("");
+		                   		for (var i = 0; i < data.list.length; i++) {
+		            				var item = data.list[i];
+		            				$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+		            						'<td>' + item.PROVINCE +','+item.CITY + '</td>' +
+		            						'<td>' + item.CHANNEL_NAME + '</td>' +
+		            						'<td>' + item.COMPANY_NAME + '</td>' +
+		            						'<td>' + item.OWNER_NAME + '</td>' +
+		            						'<td>' + item.VEHICLE_NO + '</td>' +
+		            						'<td>' + item.TYPE + '</td>' +
+		            						'<td>' + item.TERMINAL_TYPE + '</td>' +
+		            						'<td>' + item.TERMINAL_NUM + '</td>' +
+		            						'<td>' + (item.ADD_TIME==""?"":setformat1(new Date(item.ADD_TIME))) + '</td>' +
+		            						'</tr>')
+		            						.data('database', item)
+		            						.appendTo('#az-tabel tbody');
+		            			} 
+	                   }/*success*/
+	               });
+
+	           }
+
+	       };
+	            if(data.list.length==0){
+	            	layer.msg('查询不到该信息！');
+	            }else{
+			       $('#pageLimit').bootstrapPaginator(options);  
+	            }
+		},
+		error: function(){
+		}         
+	});
+}
+	(function ($) {
+		var queryCheckBox = '#az-tabel tbody input.checkbox[type=checkbox]';
+		var modalPanel = '#az-modal';
+
+		var azTabel = null;
+
+		/*生成表格数据*/
+		azTabel = new CheckBox('#az-tabel');
+		$(function () {
+			$('#azAdd').on('click', function () {
+				findcl("");
+				findxlzd("");
+				findazzd();		
+				findlx();		
+				$(modalPanel).modal('show');
+				/*重置*/
+				$('#az_type').val('');
+				$('#az-save').off('click').on('click', function () {
+					if($('#zd_zt').val()=='已安装'){
+						layer.msg('终端编号已安装！');
+						return false;
+					}	
+					if($('#az_vehicle').val()==''){
+						layer.msg('车牌号必须填写！');
+						return false;
+					}
+					if($('#az_terminal').val()==''){
+						layer.msg('终端编号必须填写！');
+						return false;
+					}
+					
+					$.ajax({
+						 type: "POST",
+						url: basePath + "install/addaz",
+						data:'postData={"vehicle":"'+$('#az_vehicle').val()+
+									'","zd_id":"'+$('#zd-query').val()+
+									'","terminal":"'+$('#az_terminal').val()+
+									'"}',
+						timeout : 180000,
+						dataType: 'json',
+						success:function(data){
+							if(data.info=='不存在'){
+								layer.msg('车牌或终端编号不存在,请重新"添加"');
+							}else if(data.info=='添加成功'){
+								$(modalPanel).modal('hide');
+								layer.msg('添加成功');
+								findaz();
+							}else{
+								layer.msg('添加失败');
+							}
+						},
+						error: function(){
+						}         
+					});
+				});
+			});
+			$('#azUpd').on('click', function () {
+				if ($(queryCheckBox + ':checked').length === 1) {
+					var item = $(queryCheckBox + ':checked').parents('tr').data('database');
+					/*赋值*/
+					findcl(item.VEHICLE_ID);
+					findxlzd(item.TERMINAL_ID);
+					findazzd();		
+					$('#az_type').val(item.TYPE);
+					$('#az_terminal').val(item.TERMINAL_NUM);
+					$(modalPanel).modal('show');
+					/*事件*/
+					$('#az-save').off('click').on('click', function () {
+						if($('#az_vehicle').val()==''){
+							layer.msg('车牌号必须填写！');
+							return false;
+						}
+						if($('#az_terminal').val()==''){
+							layer.msg('终端编号必须填写！');
+							return false;
+						}
+						$.ajax({
+							 type: "POST",
+							url: basePath + "install/editaz",
+							data:'postData={"vehicle":"'+$('#az_vehicle').val()+
+											'","zd_id":"'+$('#zd-query').val()+
+											'","terminal":"'+$('#az_terminal').val()+
+											'","id":"'+item.INS_ID+
+											'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='不存在'){
+									layer.msg('车牌或终端编号不存在,请重新"修改"');
+								} if(data.info=='修改成功'){
+									$(modalPanel).modal('hide');
+									layer.msg('修改成功');
+									findaz();
+								}else{
+									layer.msg('修改失败');
+								}
+							},
+							error: function(){
+							}         
+						});
+					});
+				} else {
+					layer.msg('必须选中一行');
+				}
+			});
+			$('#azDel').on('click', function () {
+				if ($(queryCheckBox + ':checked').length > 0) {
+					var postdata = [];
+					layer.confirm('你确定要删除选中的数据', {
+						btn: ['删除', '取消'],
+						offset: '100px'
+					}, function (layerIndex) {
+						// 遍历要删除的数据
+						$(queryCheckBox + ':checked').parents('tr').each(function (index, item) {
+							postdata.push($(item).data('database'));
+							console.info('each:', $(item).data('database'), postdata);
+						});
+						var ids = "";
+						for (var int = 0; int < postdata.length; int++) {
+							ids += postdata[int].INS_ID+",";
+						}
+						console.log(ids)
+						$.ajax({
+							 type: "POST",
+							url: basePath + "install/delaz",
+							data:'postData={"id":"'+ids+'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='删除成功'){
+									layer.close(layerIndex);
+									layer.msg('删除成功');
+									findaz();
+								}else{
+									layer.close(layerIndex);
+									layer.msg('删除失败');
+								}
+							},
+							error: function(){
+							}         
+						});
+					}, function (layerIndex) {
+						layer.close(layerIndex);
+					});
+				} else {
+					layer.msg('至少选中一行');
+				}
+			});
+
+			$('#az-save').on('click', function () {
+				$('#az-modal').modal('hide');
+			});
+		});
+	})(jQuery);
+	function findchoose(){
+		var choose=$("#az_choose").val();
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findchoose",
+			data:{
+				"choose":choose
+			},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#az_choosed").empty();
+				$("#az_choosed").append('<option value="" >默认(为空)</option>');
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#az_choosed").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#az_choosed").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#az_choosed").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findqd(){
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findqd",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#az_channel").empty();
+				$("#az_channel").append('<option value="" >默认(为空)</option>');
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#az_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}else{
+							$("#az_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#az_channel").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findqy(){
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/findqy",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#az_company").empty();
+				$("#az_company").append('<option value="" >默认(为空)</option>');
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#az_company").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#az_company").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#az_company").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findcl(obj){
+		$.ajax({
+			type: "POST",
+			async:false,
+			url: basePath + "common/findcl",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#az_vehicle").empty();
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#az_vehicle").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#az_vehicle").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#az_vehicle").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findxlzd(obj){
+		$.ajax({
+			type: "POST",
+			async:false,
+			url: basePath + "common/findzd",
+			data:{},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#zd-query").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#zd-query").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#zd-query").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	$('#azDc').on('click', function() {
+		url = basePath + "user/findclexcle?info="+$("#az-query").val(), window.open(url)
+});
+</script>
+</body>
+</html>

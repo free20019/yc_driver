@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>用户名</title>
+	<link rel="stylesheet" href="../../resources/style/reset.css">
+	<link rel="stylesheet" href="../../resources/style/iconfont.css">
+	<link rel="stylesheet" href="../../resources/script/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="../../resources/script/ztree/css/zTreeStyle/zTreeStyle.css"/>
+	<link rel="stylesheet" href="../../resources/script/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.min.css">
+	<link rel="stylesheet" href="../../resources/script/select2/dist/css/select2.css">
+	<link rel="stylesheet" href="../../resources/style/main.css">
+	<style>
+		.select2-container .select2-selection--single{
+			margin-top: -4px;
+		}
+	</style>
+</head>
+<body>
+<div class="container-fluid">
+	<div class="form-inline">
+		<div class="form-group" style="padding-top: 4px; padding-bottom: 4px; margin-left: 20px;">
+			<label for="userInfo-query">关键字</label>
+			<input type="text" class="form-control input-sm" id="userInfo-query" placeholder="关键字">
+		</div>
+		<button class="btn btn-primary btn-sm" onclick="finduser();">查询</button>
+		<button class="btn btn-primary btn-sm" id="userInfoAdd" data-toggle="modal">添加</button>
+		<button class="btn btn-primary btn-sm" id="userInfoUpd" data-toggle="modal">修改</button>
+		<button class="btn btn-danger btn-sm" id="userInfoDel">删除</button>
+		<button class="btn btn-primary btn-sm" id="userInfoDc">导出</button>
+	</div>
+</div>
+<div class="container-fluid tableDiv" style="overflow-x: auto;">
+	<table class="table table-striped table-hover table-condensed" id="userInfo-tabel">
+		<thead>
+		<tr>
+			<th width="40"><input type="checkbox" class="checkboxAll"></th>
+			<th width="90">序号</th>
+			<th width="130">用户名</th>
+			<th width="130">密码</th>
+			<th width="130">用户姓名</th>
+			<th width="130">权限名</th>
+			<th width="130">操作对象</th>
+			<th width="130">是否关联</th>
+		</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="userInfo-modalUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+					aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">用户信息</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal" style="padding-right: 50px;">
+					<div class="form-group">
+						<label for="userInfo-userName" class="col-sm-2 control-label">用户名</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="userInfo-userName" placeholder="用户名">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="userInfo-password" class="col-sm-2 control-label">密码</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="userInfo-password" placeholder="密码">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="userInfo-contactInfomation" class="col-sm-2 control-label">姓名</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="userInfo-contactInfomation" placeholder="姓名">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="userInfo-position" class="col-sm-2 control-label">权限</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="userInfo-position" placeholder="权限">
+<!-- 								<option value="0">职务</option> -->
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="user_choose" class="col-sm-2 control-label">选择条件</label>
+							<div class="col-sm-10">
+								<select class="form-control" id="user_choose" placeholder="选择条件" style="width: 210px;display: inline-block" onchange="findchoose('')">
+									<option value="">不限</option>
+									<option value="1">渠道</option>
+									<option value="2">公司</option>
+									<option value="3">车主</option>
+									<option value="4">车辆</option>
+								</select>
+								<select class="form-control select2" id="user_choosed" placeholder="选择条件" style="width: 210px;height: 34px">
+								</select>
+							</div>
+					</div>
+					<!--<div class="form-group">
+						<div class="col-sm-10" style="float:left;">
+
+						</div>
+					</div>-->
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="userInfo-save">提交</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="../../resources/script/jquery-1.12.1.min.js"></script>
+<script src="../../resources/script/bootstrap/js/bootstrap.js"></script>
+<script src="../../resources/script/layer/layer.js"></script>
+<script src="../../resources/checkbox.js"></script>
+<script src="../../resources/script/util.js"></script>
+<script src= "../../resources/script/ztree/js/jquery.ztree.core.js"></script>
+<script src="../../resources/script/ztree/js/jquery.ztree.excheck.js"></script>
+<script src="../../resources/script/select2/dist/js/i18n/zh-CN.js"></script>
+<script src="../../resources/script/select2/dist/js/select2.min.js"></script>
+<script>
+$.fn.modal.Constructor.prototype.enforceFocus = function () {}
+$(document).ready(function() {
+	  $(".select2").select2({  
+			language: "zh-CN",  //设置 提示语言
+	        tags:true,  
+	        createTag:function (decorated, params) {  
+	            return null;  
+	        },  
+	    });
+	});
+finduser();
+$.ajax({
+	 type: "POST",
+	url: basePath + "login/index",
+	data:{},
+	timeout : 180000,
+	dataType: 'json',
+	success:function(data){
+		power_buts = data.power_but;
+		if(power_buts.indexOf('用户管理增加')<0)
+			$("#userInfoAdd").hide();
+		if(power_buts.indexOf('用户管理删除')<0)
+			$("#userInfoDel").hide();
+		if(power_buts.indexOf('用户管理修改')<0)
+			$("#userInfoUpd").hide();
+	},
+	error: function(XMLHttpRequest, textStatus, errorThrown) {
+	}         
+});
+function finduser(){
+	$.ajax({
+		 type: "POST",
+		url: basePath + "user/finduser",
+		data:{ 'info' : $("#userInfo-query").val() },
+		timeout : 180000,
+		dataType: 'json',
+		success:function(data){
+			$('#userInfo-tabel tbody').html("");
+			for (var i = 0; i < data.length; i++) {
+				var item = data[i];
+				$('<tr><td><input type="checkbox" class="checkbox"/></td><td>' + (i + 1) + '</td>' +
+						'<td>' + item.USER_NAME + '</td>' +
+						'<td>' + item.USER_PWD + '</td>' +
+						'<td>' + item.REAL_NAME + '</td>' +
+						'<td>' + item.POWER_NAME + '</td>' +
+						'<td>' + item.OPTION_NAME + '</td>' +
+						'<td>' + (item.SIGN==1?"关联":"不关联") + '</td>' +
+						'</tr>')
+						.data('database', item)
+						.appendTo('#userInfo-tabel tbody');
+			}
+		},
+		error: function(){
+		}         
+	});
+}
+function test(obj,name){
+	var type = "";
+	if(obj.length==5){
+		type="(公司)"
+	}else if(obj.length==8){
+		type="(分公司)"
+	}
+	if($("#qxlb").html().indexOf(name+type)<0){
+    	$("#qxlb").append("<tr class='tdcss1'><td>"+(name+type)+"</td><td><input type='checkbox' name='qxlbbox' value='"+obj+"'checked='checked'/></td></tr>");
+	}
+	console.log(obj,name);
+}
+	(function ($) {
+
+		var queryCheckBox = '#userInfo-tabel tbody input.checkbox[type=checkbox]';
+		var modalPanel = '#userInfo-modalUser';
+
+		var userInfoTabel = null;
+
+		/*生成表格数据*/
+		userInfoTabel = new CheckBox('#userInfo-tabel');
+
+		$(function () {
+			$('#userInfoAdd').off('click').on('click', function () {
+				findchoose('');
+				$(modalPanel).modal('show');
+				/*重置*/
+				$('#userInfo-userName').val('');
+				$('#userInfo-password').val('');
+				$('#userInfo-contactInfomation').val('');
+				findpower("");
+				$("#qxlb").html('');
+				/*事件userInfo-position*/
+				$('#userInfo-save').off('click').on('click', function () {
+					var options=$("#user_choosed option:selected"); 
+					if($('#userInfo-userName').val()==''){
+						layer.msg('用户名必须填写！');
+						return false;
+					}
+// 					if($('#userInfo-userName').val().indexOf('wx')!=0){
+// 						layer.msg('用户名必须以wx开头！');
+// 						return false;
+// 					}
+					if($('#userInfo-password').val()==''){
+						layer.msg('密码必须填写！');
+						return false;
+					}
+					var id_array=new Array();  
+                	$('input[name="qxlbbox"]:checked').each(function(){  
+                	    id_array.push($(this).val());//向数组中添加元素  
+                	});  
+                	var idstr=id_array.join(';');//将数组元素连接起来以构建一个字符串  
+					$.ajax({
+						 type: "POST",
+						url: basePath + "user/adduser",
+						data:'postData={"user_name":"'+$('#userInfo-userName').val()+
+									'","user_pwd":"'+$('#userInfo-password').val()+
+									'","real_name":"'+$('#userInfo-contactInfomation').val()+
+									'","note":"'+$('#userInfo-position').val()+
+									'","IDSTR":"'+idstr+
+									'","choose":"'+$('#user_choose').val()+
+									'","choosed":"'+$('#user_choosed').val()+
+									'","option":"'+options.text()+
+									'"}',
+						timeout : 180000,
+						dataType: 'json',
+						success:function(data){
+							if(data.info=='不存在'){
+								layer.msg('权限不存在,请重新"添加"');
+							}else if(data.info=='重复添加'){
+								layer.msg('用户名重复');
+							}else if(data.info=='添加成功'){
+								$(modalPanel).modal('hide');
+								layer.msg('添加成功');
+								finduser();
+							}else{
+								layer.msg('添加失败');
+							}
+						},
+						error: function(){
+						}         
+					});
+				});
+			});
+			$('#userInfoUpd').off('click').on('click', function () {
+				if ($(queryCheckBox + ':checked').length === 1) {
+					var item = $(queryCheckBox + ':checked').parents('tr').data('database');
+					$('#userInfo-userName').attr("disabled",false);
+					$('#userInfo-position').attr("disabled",false);
+					$('#user_choose').attr("disabled",false);
+					$('#user_choosed').attr("disabled",false);	
+					if(item.SIGN=='1'){
+						$('#userInfo-userName').attr("disabled",true);
+						$('#userInfo-position').attr("disabled",true);
+						$('#user_choose').attr("disabled",true);
+						$('#user_choosed').attr("disabled",true);
+					}
+					$(modalPanel).modal('show');
+					/*赋值*/
+					var a = item.POWER_OPTION.split("|");
+					$('#user_choose').val(a[0]);
+					findchoose(a[1]);
+					$('#userInfo-userName').val(item.USER_NAME);
+					$('#userInfo-password').val(item.USER_PWD);
+					$('#userInfo-contactInfomation').val(item.REAL_NAME);
+					findpower(item.NOTE);
+					$("#qxlb").html('');
+					/*事件*/
+					$('#userInfo-save').off('click').on('click', function () {
+						if($('#userInfo-userName').val()==''){
+							layer.msg('用户名必须填写！');
+						}
+						if($('#userInfo-password').val()==''){
+							layer.msg('密码必须填写！');
+							return false;
+						}
+						var id_array=new Array();  
+                    	$('input[name="qxlbbox"]:checked').each(function(){  
+                    	    id_array.push($(this).val());//向数组中添加元素  
+                    	});  
+                    	var idstr=id_array.join(';');//将数组元素连接起来以构建一个字符串  
+                    	var options=$("#user_choosed option:selected"); 
+						$.ajax({
+							 type: "POST",
+							url: basePath + "user/edituser",
+							data:'postData={"user_name":"'+$('#userInfo-userName').val()+
+										'","user_pwd":"'+$('#userInfo-password').val()+
+										'","real_name":"'+$('#userInfo-contactInfomation').val()+
+										'","note":"'+$('#userInfo-position').val()+
+										'","user_id":"'+item.USER_ID+
+										'","IDSTR":"'+idstr+
+										'","choose":"'+$('#user_choose').val()+
+										'","choosed":"'+$('#user_choosed').val()+
+										'","option":"'+options.text()+
+										'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='不存在'){
+									layer.msg('权限不存在,请重新"修改"');
+								}else if(data.info=='重复添加'){
+									layer.msg('用户名重复');
+								}else if(data.info=='修改成功'){
+									$(modalPanel).modal('hide');
+									layer.msg('修改成功');
+									finduser();
+								}else{
+									layer.msg('修改失败');
+								}
+							},
+							error: function(){
+								layer.msg('用户名重复');
+							}         
+						});
+					});
+				} else {
+					layer.msg('必须选中一行');
+				}
+			});
+			$('#userInfoDel').off('click').on('click', function () {
+				if ($(queryCheckBox + ':checked').length > 0) {
+					var postdata = [];
+					layer.confirm('你确定要删除选中的数据(关联数据无法在此删除)', {
+						btn: ['删除', '取消'],
+						offset: '100px'
+					}, function (layerIndex) {
+						// 遍历要删除的数据
+						$(queryCheckBox + ':checked').parents('tr').each(function (index, item) {
+							postdata.push($(item).data('database'));
+							console.info('each:', $(item).data('database'), postdata);
+						});
+						var ids = "";
+						for (var int = 0; int < postdata.length; int++) {
+							if(postdata[int].SIGN!="1"){			
+								ids += postdata[int].USER_ID+",";
+							}
+						}
+						$.ajax({
+							 type: "POST",
+							url: basePath + "user/deluser",
+							data:'postData={"id":"'+ids+'"}',
+							timeout : 180000,
+							dataType: 'json',
+							success:function(data){
+								if(data.info=='删除成功'){
+									layer.close(layerIndex);
+									layer.msg('删除成功');
+									finduser();
+								}else{
+									layer.close(layerIndex);
+									layer.msg('删除失败');
+								}
+							},
+							error: function(){
+							}         
+						});
+					}, function (layerIndex) {
+						layer.close(layerIndex);
+					});
+				} else {
+					layer.msg('至少选中一行');
+				}
+			});
+
+			$('#userInfo-save').off('click').on('click', function () {
+				$('#userInfo-modalUser').modal('hide');
+			});
+		});
+	})(jQuery);
+	function findchoose(obj){
+		var choose=$("#user_choose").val();
+		if(choose==""){
+			$("#user_choosed").empty();
+			return false;
+		}
+		$.ajax({
+			type: "POST",
+			url: basePath + "common/finduserchoose",
+			data:{
+				"choose":choose
+			},
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#user_choosed").empty();
+				for(var i=0; i<data.datas.length;i++){
+					if(obj.length>0){
+						if(obj == data.datas[i].id){
+							$("#user_choosed").append('<option value="'+data.datas[i].id+'" selected>'+data.datas[i].name+'</option>');
+						}else{
+							$("#user_choosed").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+						}
+					}else{
+						$("#user_choosed").append('<option value="'+data.datas[i].id+'">'+data.datas[i].name+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	function findpower(obj){
+		$.ajax({
+			 type: "POST",
+			url: basePath + "user/findpower",
+			data:{ 'info' : "" },
+			timeout : 180000,
+			dataType: 'json',
+			success:function(data){
+				$("#userInfo-position").empty();
+				for (var i = 0; i < data.length; i++) {
+					if(obj.length>0){
+						if(obj == data[i].ID){
+							$("#userInfo-position").append('<option value="'+data[i].ID+'" selected>'+data[i].POWER_NAME+'</option>');
+						}else{
+							$("#userInfo-position").append('<option value="'+data[i].ID+'">'+data[i].POWER_NAME+'</option>');
+						}
+					}else{
+						$("#userInfo-position").append('<option value="'+data[i].ID+'">'+data[i].POWER_NAME+'</option>');
+					}
+				}
+			},
+			error: function(){
+			}         
+		});
+	}
+	$('#userInfoDc').on('click', function() {
+		url = basePath + "user/finduserexcle?info="+$("#userInfo-query").val(), window.open(url)
+});
+</script>
+</body>
+</html>
